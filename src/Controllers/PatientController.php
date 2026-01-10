@@ -101,15 +101,24 @@ class PatientController extends BaseController {
     public function viewPatient($id) {
         $this->requireAuth();
         
-        $patient = $this->patientModel->getPatientWithCatheter($id);
+        $patient = $this->patientModel->find($id);
         
         if (!$patient) {
             Flash::error('Patient not found');
             return $this->redirect('/patients');
         }
         
+        // Decode JSON fields for display
+        $patient['comorbid_illness_decoded'] = json_decode($patient['comorbid_illness'], true) ?: [];
+        $patient['surgery_decoded'] = json_decode($patient['surgery'], true) ?: [];
+        
+        // Get lookup names for display
+        $patient['comorbidity_names'] = $this->getLookupNames('lookup_comorbidities', $patient['comorbid_illness_decoded']);
+        $patient['surgery_names'] = $this->getLookupNames('lookup_surgeries', $patient['surgery_decoded']);
+        
         $this->view('patients.view', [
-            'patient' => $patient
+            'patient' => $patient,
+            'specialities' => $this->getSpecialities()
         ]);
     }
     
@@ -277,6 +286,21 @@ class PatientController extends BaseController {
     private function getLookupData($table) {
         $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY sort_order, name");
         return $stmt->fetchAll();
+    }
+    
+    /**
+     * Get lookup names by IDs
+     */
+    private function getLookupNames($table, $ids) {
+        if (empty($ids)) {
+            return [];
+        }
+        
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare("SELECT name FROM {$table} WHERE id IN ({$placeholders})");
+        $stmt->execute($ids);
+        
+        return array_column($stmt->fetchAll(), 'name');
     }
     
     /**

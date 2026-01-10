@@ -4,7 +4,7 @@
         <p class="text-muted">Hospital #: <strong><?= e($patient['hospital_number']) ?></strong></p>
     </div>
     <div>
-        <?php if (hasAnyRole(['attending', 'resident'])): ?>
+        <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
         <a href="<?= BASE_URL ?>/patients/edit/<?= $patient['id'] ?>" class="btn btn-primary">
             <i class="bi bi-pencil"></i> Edit Patient
         </a>
@@ -106,12 +106,8 @@
                         <th>Comorbidities:</th>
                         <td>
                             <?php
-                            $comorbidities = json_decode($patient['comorbid_illness'], true);
-                            if (!empty($comorbidities)):
-                                $stmt = $this->db->prepare("SELECT name FROM lookup_comorbidities WHERE id IN (" . implode(',', array_fill(0, count($comorbidities), '?')) . ")");
-                                $stmt->execute($comorbidities);
-                                $comorbidityNames = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                                foreach ($comorbidityNames as $name):
+                            if (!empty($patient['comorbidity_names'])):
+                                foreach ($patient['comorbidity_names'] as $name):
                             ?>
                                 <span class="badge bg-light text-dark me-1"><?= e($name) ?></span>
                             <?php
@@ -126,12 +122,8 @@
                         <th>Surgeries:</th>
                         <td>
                             <?php
-                            $surgeries = json_decode($patient['surgery'], true);
-                            if (!empty($surgeries)):
-                                $stmt = $this->db->prepare("SELECT name FROM lookup_surgeries WHERE id IN (" . implode(',', array_fill(0, count($surgeries), '?')) . ")");
-                                $stmt->execute($surgeries);
-                                $surgeryNames = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                                foreach ($surgeryNames as $name):
+                            if (!empty($patient['surgery_names'])):
+                                foreach ($patient['surgery_names'] as $name):
                             ?>
                                 <span class="badge bg-light text-dark me-1"><?= e($name) ?></span>
                             <?php

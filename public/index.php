@@ -48,6 +48,8 @@ $routes = [
     'GET /patients/create' => 'PatientController@create',
     'POST /patients/store' => 'PatientController@store',
     'POST /patients/check-hospital-number' => 'PatientController@checkHospitalNumber',
+    // Note: /patients/viewPatient/:id, /patients/edit/:id, /patients/update/:id, /patients/delete/:id 
+    // are handled by dynamic routing below
 ];
 
 $route = $method . ' ' . $uri;
@@ -71,7 +73,14 @@ if (isset($routes[$route])) {
     $parts = explode('/', trim($uri, '/'));
     
     if (count($parts) >= 1) {
-        $controllerName = ucfirst($parts[0]) . 'Controller';
+        // Map plural routes to singular controller names
+        $controllerMap = [
+            'patients' => 'PatientController',
+            'catheters' => 'CatheterController',
+            'regimes' => 'RegimeController',
+        ];
+        
+        $controllerName = $controllerMap[$parts[0]] ?? ucfirst($parts[0]) . 'Controller';
         $action = $parts[1] ?? 'index';
         $params = array_slice($parts, 2);
         
