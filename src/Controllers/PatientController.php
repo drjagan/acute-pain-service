@@ -116,9 +116,14 @@ class PatientController extends BaseController {
         $patient['comorbidity_names'] = $this->getLookupNames('lookup_comorbidities', $patient['comorbid_illness_decoded']);
         $patient['surgery_names'] = $this->getLookupNames('lookup_surgeries', $patient['surgery_decoded']);
         
+        // Get patient's catheters
+        $catheterModel = new \Models\Catheter();
+        $catheters = $catheterModel->getPatientCatheters($id);
+        
         $this->view('patients.view', [
             'patient' => $patient,
-            'specialities' => $this->getSpecialities()
+            'specialities' => $this->getSpecialities(),
+            'catheters' => $catheters
         ]);
     }
     

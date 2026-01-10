@@ -182,36 +182,84 @@
     </div>
 </div>
 
-<!-- Catheter Information (if exists) -->
-<?php if (isset($patient['catheter_id'])): ?>
+<!-- Catheters Section -->
 <div class="row">
     <div class="col-md-12">
-        <div class="card mb-3 border-success">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-file-medical"></i> Active Catheter</h5>
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-file-medical"></i> Catheters</h5>
+                <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
+                <a href="<?= BASE_URL ?>/catheters/create?patient_id=<?= $patient['id'] ?>" class="btn btn-sm btn-light">
+                    <i class="bi bi-plus-circle"></i> Insert New Catheter
+                </a>
+                <?php endif; ?>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <strong>Catheter Type:</strong><br>
-                        <?= e(ucwords(str_replace('_', ' ', $patient['catheter_type']))) ?>
+                <?php if (empty($catheters)): ?>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No catheters recorded for this patient.
+                        <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
+                            <a href="<?= BASE_URL ?>/catheters/create?patient_id=<?= $patient['id'] ?>">Insert first catheter</a>
+                        <?php endif; ?>
                     </div>
-                    <div class="col-md-3">
-                        <strong>Category:</strong><br>
-                        <?= e(ucwords(str_replace('_', ' ', $patient['catheter_category']))) ?>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Insertion Date</th>
+                                    <th>Days In Situ</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($catheters as $catheter): ?>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            <?= e(ucwords(str_replace('_', ' ', $catheter['catheter_category']))) ?>
+                                        </span>
+                                    </td>
+                                    <td><?= e(ucwords(str_replace('_', ' ', $catheter['catheter_type']))) ?></td>
+                                    <td><?= formatDate($catheter['date_of_insertion']) ?></td>
+                                    <td>
+                                        <?php
+                                        $daysInserted = (new DateTime())->diff(new DateTime($catheter['date_of_insertion']))->days;
+                                        $colorClass = $daysInserted > 5 ? 'text-warning' : 'text-success';
+                                        ?>
+                                        <span class="<?= $colorClass ?>"><?= $daysInserted ?> days</span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $statusClass = [
+                                            'active' => 'success',
+                                            'removed' => 'secondary',
+                                            'displaced' => 'warning',
+                                            'infected' => 'danger'
+                                        ];
+                                        $class = $statusClass[$catheter['status']] ?? 'secondary';
+                                        ?>
+                                        <span class="badge bg-<?= $class ?>">
+                                            <?= ucfirst($catheter['status']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $catheter['id'] ?>" 
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-3">
-                        <strong>Insertion Date:</strong><br>
-                        <?= formatDate($patient['date_of_insertion']) ?>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $patient['catheter_id'] ?>" class="btn btn-sm btn-success">
-                            View Catheter Details →
-                        </a>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
-<?php endif; ?>

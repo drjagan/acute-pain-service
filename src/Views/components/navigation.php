@@ -15,10 +15,10 @@
         </li>
         <?php endif; ?>
         
-        <?php if (hasAnyRole(['attending', 'resident'])): ?>
+        <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-file-medical"></i> Catheters <small>(Phase 2)</small>
+            <a class="nav-link <?= isRoute('catheters') ? 'active' : '' ?>" href="<?= BASE_URL ?>/catheters">
+                <i class="bi bi-file-medical"></i> Catheters
             </a>
         </li>
         <?php endif; ?>
