@@ -147,11 +147,16 @@ class CatheterController extends BaseController {
         $regimeModel = new \Models\DrugRegime();
         $regimes = $regimeModel->getCatheterRegimes($id);
         
+        // Get functional outcomes for this catheter
+        $outcomeModel = new \Models\FunctionalOutcome();
+        $outcomes = $outcomeModel->getCatheterOutcomes($id);
+        
         $this->view('catheters.view', [
             'catheter' => $catheter,
             'categories' => Catheter::getCategoryNames(),
             'catheterTypes' => Catheter::getCatheterTypes(),
-            'regimes' => $regimes
+            'regimes' => $regimes,
+            'outcomes' => $outcomes
         ]);
     }
     

@@ -175,9 +175,177 @@
                     <div class="col-md-3">
                         <strong>Created:</strong><br>
                         <?= formatDateTime($patient['created_at']) ?>
+        </div>
+    </div>
+</div>
+
+<!-- Functional Outcomes Section -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-activity"></i> Functional Outcomes</h5>
+                <div>
+                    <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin']) && !empty($activeCatheters)): ?>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="addOutcomeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-plus-circle"></i> Record New Assessment
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="addOutcomeDropdown">
+                            <?php foreach ($activeCatheters as $catheter): ?>
+                            <li>
+                                <a class="dropdown-item" href="<?= BASE_URL ?>/outcomes/create?catheter_id=<?= $catheter['id'] ?>">
+                                    For <?= e(ucwords(str_replace('_', ' ', $catheter['catheter_type']))) ?> 
+                                    (POD: <?php
+                                        $daysInserted = (new DateTime())->diff(new DateTime($catheter['date_of_insertion']))->days;
+                                        echo $daysInserted;
+                                    ?>)
+                                </a>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
+                    <?php elseif (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
+                    <a href="<?= BASE_URL ?>/catheters/create?patient_id=<?= $patient['id'] ?>" class="btn btn-sm btn-warning">
+                        <i class="bi bi-exclamation-circle"></i> Insert Catheter First
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
+            <div class="card-body">
+                <?php if (empty($outcomes)): ?>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No functional outcomes recorded for this patient.
+                        <?php if (!empty($activeCatheters) && hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
+                            Use the dropdown above to record a functional outcome for an active catheter.
+                        <?php elseif (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
+                            <a href="<?= BASE_URL ?>/catheters/create?patient_id=<?= $patient['id'] ?>">Insert a catheter first</a> to record outcomes.
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Catheter Type</th>
+                                    <th>POD</th>
+                                    <th>Date</th>
+                                    <th>Spirometry</th>
+                                    <th>Ambulation</th>
+                                    <th>Cough</th>
+                                    <th>SpO2</th>
+                                    <th>Infection</th>
+                                    <th>Sentinel Events</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($outcomes as $outcome): ?>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-<?= $outcome['catheter_status'] === 'active' ? 'success' : 'secondary' ?>">
+                                            <?= e(ucwords(str_replace('_', ' ', $outcome['catheter_type']))) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Day <?= $outcome['pod'] ?></span>
+                                    </td>
+                                    <td><?= formatDate($outcome['entry_date']) ?></td>
+                                    <td>
+                                        <?php
+                                        $spirometryClass = match($outcome['incentive_spirometry']) {
+                                            'yes' => 'success',
+                                            'partial' => 'warning',
+                                            'unable' => 'danger',
+                                            default => 'secondary'
+                                        };
+                                        ?>
+                                        <span class="badge bg-<?= $spirometryClass ?>">
+                                            <?= ucwords($outcome['incentive_spirometry']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $ambulationClass = match($outcome['ambulation']) {
+                                            'independent' => 'success',
+                                            'assisted' => 'warning',
+                                            'bedbound' => 'danger',
+                                            default => 'secondary'
+                                        };
+                                        ?>
+                                        <span class="badge bg-<?= $ambulationClass ?>">
+                                            <?= ucwords($outcome['ambulation']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $coughClass = match($outcome['cough_ability']) {
+                                            'effective' => 'success',
+                                            'weak' => 'warning',
+                                            'unable' => 'danger',
+                                            default => 'secondary'
+                                        };
+                                        ?>
+                                        <span class="badge bg-<?= $coughClass ?>">
+                                            <?= ucwords($outcome['cough_ability']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $spo2Class = match($outcome['room_air_spo2']) {
+                                            'yes' => 'success',
+                                            'no' => 'warning',
+                                            'requires_o2' => 'danger',
+                                            default => 'secondary'
+                                        };
+                                        ?>
+                                        <span class="badge bg-<?= $spo2Class ?>">
+                                            <?php if ($outcome['spo2_value']): ?>
+                                                <?= $outcome['spo2_value'] ?>%
+                                            <?php else: ?>
+                                                <?= $outcome['room_air_spo2'] === 'yes' ? 'OK' : 'O2' ?>
+                                            <?php endif; ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($outcome['catheter_site_infection'] !== 'none'): ?>
+                                            <i class="bi bi-exclamation-triangle text-danger fs-5" title="<?= ucwords(str_replace('_', ' ', $outcome['catheter_site_infection'])) ?>"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-check-circle text-success fs-5" title="No infection"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($outcome['sentinel_events'] !== 'none'): ?>
+                                            <i class="bi bi-exclamation-octagon text-danger fs-5" title="<?= ucwords(str_replace('_', ' ', $outcome['sentinel_events'])) ?>"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-check-circle text-success fs-5" title="No events"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="<?= BASE_URL ?>/outcomes/viewOutcome/<?= $outcome['id'] ?>" 
+                                               class="btn btn-outline-primary"
+                                               title="View Outcome">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $outcome['catheter_id'] ?>" 
+                                               class="btn btn-outline-info"
+                                               title="View Catheter">
+                                                <i class="bi bi-file-medical"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
 </div>

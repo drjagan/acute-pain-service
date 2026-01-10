@@ -31,10 +31,10 @@
         </li>
         <?php endif; ?>
         
-        <?php if (hasAnyRole(['attending', 'resident', 'nurse'])): ?>
+        <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-activity"></i> Outcomes <small>(Phase 3)</small>
+            <a class="nav-link <?= isRoute('outcomes') ? 'active' : '' ?>" href="<?= BASE_URL ?>/outcomes">
+                <i class="bi bi-activity"></i> Functional Outcomes
             </a>
         </li>
         <?php endif; ?>

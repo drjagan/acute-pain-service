@@ -124,6 +124,10 @@ class PatientController extends BaseController {
         $regimeModel = new \Models\DrugRegime();
         $regimes = $regimeModel->getPatientRegimes($id);
         
+        // Get patient's functional outcomes
+        $outcomeModel = new \Models\FunctionalOutcome();
+        $outcomes = $outcomeModel->getPatientOutcomes($id);
+        
         // Get active catheters for drug regime dropdown
         $activeCatheters = $catheterModel->getPatientCatheters($id, true); // active only
         
@@ -132,6 +136,7 @@ class PatientController extends BaseController {
             'specialities' => $this->getSpecialities(),
             'catheters' => $catheters,
             'regimes' => $regimes,
+            'outcomes' => $outcomes,
             'activeCatheters' => $activeCatheters
         ]);
     }
