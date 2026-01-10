@@ -120,10 +120,19 @@ class PatientController extends BaseController {
         $catheterModel = new \Models\Catheter();
         $catheters = $catheterModel->getPatientCatheters($id);
         
+        // Get patient's drug regimes
+        $regimeModel = new \Models\DrugRegime();
+        $regimes = $regimeModel->getPatientRegimes($id);
+        
+        // Get active catheters for drug regime dropdown
+        $activeCatheters = $catheterModel->getPatientCatheters($id, true); // active only
+        
         $this->view('patients.view', [
             'patient' => $patient,
             'specialities' => $this->getSpecialities(),
-            'catheters' => $catheters
+            'catheters' => $catheters,
+            'regimes' => $regimes,
+            'activeCatheters' => $activeCatheters
         ]);
     }
     
