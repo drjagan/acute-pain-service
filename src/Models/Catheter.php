@@ -66,7 +66,7 @@ class Catheter extends BaseModel {
             SELECT c.*, 
                    p.patient_name, 
                    p.hospital_number,
-                   u.full_name as created_by_name
+                   CONCAT(u.first_name, ' ', u.last_name) as created_by_name
             FROM {$this->table} c
             LEFT JOIN patients p ON c.patient_id = p.id
             LEFT JOIN users u ON c.created_by = u.id
@@ -96,8 +96,8 @@ class Catheter extends BaseModel {
                    p.age,
                    p.gender,
                    p.diagnosis,
-                   creator.full_name as created_by_name,
-                   updater.full_name as updated_by_name
+                   CONCAT(creator.first_name, ' ', creator.last_name) as created_by_name,
+                   CONCAT(updater.first_name, ' ', updater.last_name) as updated_by_name
             FROM {$this->table} c
             LEFT JOIN patients p ON c.patient_id = p.id
             LEFT JOIN users creator ON c.created_by = creator.id
