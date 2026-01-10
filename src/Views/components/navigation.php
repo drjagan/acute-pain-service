@@ -23,10 +23,10 @@
         </li>
         <?php endif; ?>
         
-        <?php if (hasAnyRole(['attending', 'resident', 'nurse'])): ?>
+        <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-capsule"></i> Drug Regime <small>(Phase 3)</small>
+            <a class="nav-link <?= isRoute('regimes') ? 'active' : '' ?>" href="<?= BASE_URL ?>/regimes">
+                <i class="bi bi-capsule"></i> Drug Regimes
             </a>
         </li>
         <?php endif; ?>

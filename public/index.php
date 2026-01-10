@@ -77,7 +77,7 @@ if (isset($routes[$route])) {
         $controllerMap = [
             'patients' => 'PatientController',
             'catheters' => 'CatheterController',
-            'regimes' => 'RegimeController',
+            'regimes' => 'DrugRegimeController',
         ];
         
         $controllerName = $controllerMap[$parts[0]] ?? ucfirst($parts[0]) . 'Controller';

@@ -237,6 +237,109 @@
     </div>
 </div>
 
+<!-- Drug Regimes Section -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-capsule"></i> Drug Regimes</h5>
+                <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
+                <a href="<?= BASE_URL ?>/regimes/create?catheter_id=<?= $catheter['id'] ?>" class="btn btn-sm btn-light">
+                    <i class="bi bi-plus-circle"></i> Record New Drug Regime
+                </a>
+                <?php endif; ?>
+            </div>
+            <div class="card-body">
+                <?php if (empty($regimes)): ?>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No drug regimes recorded for this catheter.
+                        <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
+                            <a href="<?= BASE_URL ?>/regimes/create?catheter_id=<?= $catheter['id'] ?>">Record first drug regime</a>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>POD</th>
+                                    <th>Entry Date</th>
+                                    <th>Drug Regime</th>
+                                    <th>VNRS Improvement</th>
+                                    <th>Effective</th>
+                                    <th>Side Effects</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($regimes as $regime): ?>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info">Day <?= $regime['pod'] ?></span>
+                                    </td>
+                                    <td><?= formatDate($regime['entry_date']) ?></td>
+                                    <td>
+                                        <strong><?= e($regime['drug']) ?></strong> <?= $regime['concentration'] ?>%<br>
+                                        <small class="text-muted">
+                                            <?= $regime['volume'] ?> ml/hr
+                                            <?php if ($regime['adjuvant']): ?>
+                                                + <?= e($regime['adjuvant']) ?>
+                                            <?php endif; ?>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $staticImprovement = $regime['baseline_vnrs_static'] - $regime['vnrs_15min_static'];
+                                        $dynamicImprovement = $regime['baseline_vnrs_dynamic'] - $regime['vnrs_15min_dynamic'];
+                                        $avgImprovement = ($staticImprovement + $dynamicImprovement) / 2;
+                                        $improvementClass = $avgImprovement >= 2 ? 'success' : ($avgImprovement > 0 ? 'warning' : 'danger');
+                                        ?>
+                                        <span class="badge bg-<?= $improvementClass ?>">
+                                            <?= number_format($avgImprovement, 1) ?> pts
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($regime['effective_analgesia']): ?>
+                                            <i class="bi bi-check-circle text-success fs-5"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-exclamation-circle text-warning fs-5"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $hasSideEffects = ($regime['hypotension'] !== 'none' || 
+                                                          $regime['bradycardia'] !== 'none' || 
+                                                          $regime['sensory_motor_deficit'] !== 'none' || 
+                                                          $regime['nausea_vomiting'] !== 'none');
+                                        ?>
+                                        <?php if ($hasSideEffects): ?>
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-exclamation-triangle"></i> Yes
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> None
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?= BASE_URL ?>/regimes/viewRegime/<?= $regime['id'] ?>" 
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Status Update Form (for active catheters) -->
 <?php if ($catheter['status'] === 'active' && hasAnyRole(['attending', 'resident', 'admin'])): ?>
 <div class="row">

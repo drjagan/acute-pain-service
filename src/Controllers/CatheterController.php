@@ -143,10 +143,15 @@ class CatheterController extends BaseController {
             $catheter['red_flags_decoded']
         );
         
+        // Get drug regimes for this catheter
+        $regimeModel = new \Models\DrugRegime();
+        $regimes = $regimeModel->getCatheterRegimes($id);
+        
         $this->view('catheters.view', [
             'catheter' => $catheter,
             'categories' => Catheter::getCategoryNames(),
-            'catheterTypes' => Catheter::getCatheterTypes()
+            'catheterTypes' => Catheter::getCatheterTypes(),
+            'regimes' => $regimes
         ]);
     }
     
