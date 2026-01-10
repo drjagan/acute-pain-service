@@ -479,34 +479,73 @@
     </div>
 </div>
 
-<!-- Status Update Form (for active catheters) -->
-<?php if ($catheter['status'] === 'active' && hasAnyRole(['attending', 'resident', 'admin'])): ?>
+<!-- Catheter Removal Section -->
+<?php if ($removal): ?>
 <div class="row">
     <div class="col-md-12">
-        <div class="card mb-3 border-primary">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-arrow-repeat"></i> Update Catheter Status</h5>
+        <div class="card mb-3 border-secondary">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-check-circle"></i> Catheter Removal Record</h5>
             </div>
             <div class="card-body">
-                <form method="POST" action="<?= BASE_URL ?>/catheters/updateStatus/<?= $catheter['id'] ?>" class="row g-3">
-                    <?= \Helpers\CSRF::field() ?>
-                    
-                    <div class="col-md-6">
-                        <label for="status" class="form-label">New Status</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="">Select status...</option>
-                            <option value="removed">Removed (Planned)</option>
-                            <option value="displaced">Displaced (Requires Removal)</option>
-                            <option value="infected">Infected (Requires Removal)</option>
-                        </select>
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Date of Removal:</strong><br>
+                        <?= formatDate($removal['date_of_removal']) ?>
                     </div>
-                    
-                    <div class="col-md-6 d-flex align-items-end">
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-arrow-repeat"></i> Update Status
-                        </button>
+                    <div class="col-md-3">
+                        <strong>Catheter Days:</strong><br>
+                        <span class="badge bg-info"><?= $removal['number_of_catheter_days'] ?> days</span>
                     </div>
-                </form>
+                    <div class="col-md-3">
+                        <strong>Indication:</strong><br>
+                        <?= e(ucwords(str_replace('_', ' ', $removal['indication']))) ?>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Patient Satisfaction:</strong><br>
+                        <?php if ($removal['patient_satisfaction']): ?>
+                            <?php
+                            $satisfactionClass = match($removal['patient_satisfaction']) {
+                                'excellent' => 'success',
+                                'good' => 'primary',
+                                'fair' => 'warning',
+                                'poor' => 'danger',
+                                default => 'secondary'
+                            };
+                            ?>
+                            <span class="badge bg-<?= $satisfactionClass ?>">
+                                <?= ucfirst($removal['patient_satisfaction']) ?>
+                            </span>
+                        <?php else: ?>
+                            <em class="text-muted">Not recorded</em>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="<?= BASE_URL ?>/catheters/viewRemoval/<?= $removal['id'] ?>" class="btn btn-outline-secondary">
+                        <i class="bi bi-eye"></i> View Full Removal Record
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php elseif ($catheter['status'] === 'active' && hasAnyRole(['attending', 'resident', 'admin'])): ?>
+<!-- Document Removal (for active catheters) -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-3 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-x-circle"></i> Catheter Removal</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    <i class="bi bi-info-circle"></i> This catheter is currently active. 
+                    To document its removal, click the button below.
+                </p>
+                <a href="<?= BASE_URL ?>/catheters/remove/<?= $catheter['id'] ?>" class="btn btn-danger">
+                    <i class="bi bi-file-medical-fill"></i> Document Catheter Removal
+                </a>
             </div>
         </div>
     </div>

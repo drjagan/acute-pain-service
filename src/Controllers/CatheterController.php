@@ -151,12 +151,17 @@ class CatheterController extends BaseController {
         $outcomeModel = new \Models\FunctionalOutcome();
         $outcomes = $outcomeModel->getCatheterOutcomes($id);
         
+        // Get removal record if exists
+        $removalModel = new \Models\CatheterRemoval();
+        $removal = $removalModel->getRemovalByCatheter($id);
+        
         $this->view('catheters.view', [
             'catheter' => $catheter,
             'categories' => Catheter::getCategoryNames(),
             'catheterTypes' => Catheter::getCatheterTypes(),
             'regimes' => $regimes,
-            'outcomes' => $outcomes
+            'outcomes' => $outcomes,
+            'removal' => $removal
         ]);
     }
     
@@ -253,6 +258,103 @@ class CatheterController extends BaseController {
     }
     
     /**
+     * Show catheter removal form (Screen 5)
+     */
+    public function remove($id) {
+        $this->requireRole(['attending', 'resident', 'admin']);
+        
+        $catheter = $this->catheterModel->getCatheterWithDetails($id);
+        
+        if (!$catheter) {
+            Flash::error('Catheter not found');
+            return $this->redirect('/catheters');
+        }
+        
+        // Check if already removed
+        $removalModel = new \Models\CatheterRemoval();
+        if ($removalModel->catheterHasRemoval($id)) {
+            Flash::error('Catheter already has a removal record');
+            return $this->redirect('/catheters/viewCatheter/' . $id);
+        }
+        
+        // Calculate catheter days
+        $insertionDate = new \DateTime($catheter['date_of_insertion']);
+        $today = new \DateTime();
+        $catheterDays = $today->diff($insertionDate)->days;
+        
+        $this->view('catheters.remove', [
+            'catheter' => $catheter,
+            'catheterDays' => $catheterDays,
+            'indications' => \Models\CatheterRemoval::getIndicationNames()
+        ]);
+    }
+    
+    /**
+     * Store catheter removal record
+     */
+    public function storeRemoval($id) {
+        $this->requireRole(['attending', 'resident', 'admin']);
+        $this->validateCSRF();
+        
+        $catheter = $this->catheterModel->find($id);
+        if (!$catheter) {
+            Flash::error('Catheter not found');
+            return $this->redirect('/catheters');
+        }
+        
+        // Validate input
+        $validation = $this->validateRemovalData($_POST);
+        if (!$validation['valid']) {
+            Flash::error($validation['message']);
+            return $this->redirect('/catheters/remove/' . $id);
+        }
+        
+        // Prepare data
+        $data = $this->prepareRemovalData($_POST);
+        $data['catheter_id'] = $id;
+        $data['patient_id'] = $catheter['patient_id'];
+        $data['created_by'] = $this->user()['id'];
+        
+        try {
+            $removalModel = new \Models\CatheterRemoval();
+            $removalId = $removalModel->create($data);
+            
+            // Update catheter status to 'removed'
+            $this->catheterModel->update($id, [
+                'status' => 'removed',
+                'updated_by' => $this->user()['id']
+            ]);
+            
+            Flash::success('Catheter removal documented successfully');
+            return $this->redirect('/catheters/viewCatheter/' . $id);
+            
+        } catch (\Exception $e) {
+            Flash::error('Failed to document catheter removal: ' . $e->getMessage());
+            return $this->redirect('/catheters/remove/' . $id);
+        }
+    }
+    
+    /**
+     * View catheter removal details
+     */
+    public function viewRemoval($id) {
+        $this->requireAuth();
+        
+        $removalModel = new \Models\CatheterRemoval();
+        $removal = $removalModel->getRemovalWithDetails($id);
+        
+        if (!$removal) {
+            Flash::error('Removal record not found');
+            return $this->redirect('/catheters');
+        }
+        
+        $this->view('catheters.viewRemoval', [
+            'removal' => $removal,
+            'indications' => \Models\CatheterRemoval::getIndicationNames()
+        ]);
+    }
+    
+    /**
      * Delete catheter (soft delete)
      */
     public function delete($id) {
@@ -273,6 +375,54 @@ class CatheterController extends BaseController {
         }
         
         return $this->redirect('/patients/viewPatient/' . $catheter['patient_id']);
+    }
+    
+    /**
+     * Validate removal data
+     */
+    private function validateRemovalData($data) {
+        $errors = [];
+        
+        // Required fields
+        $required = ['indication', 'date_of_removal', 'number_of_catheter_days'];
+        
+        foreach ($required as $field) {
+            if (empty($data[$field])) {
+                $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required';
+            }
+        }
+        
+        // If indication is 'other', indication_notes is required
+        if (!empty($data['indication']) && $data['indication'] === 'other' && empty($data['indication_notes'])) {
+            $errors[] = 'Indication notes are required when indication is "Other"';
+        }
+        
+        // Validate catheter days
+        if (isset($data['number_of_catheter_days']) && ($data['number_of_catheter_days'] < 0 || $data['number_of_catheter_days'] > 30)) {
+            $errors[] = 'Number of catheter days must be between 0 and 30';
+        }
+        
+        if (!empty($errors)) {
+            return ['valid' => false, 'message' => implode(', ', $errors)];
+        }
+        
+        return ['valid' => true];
+    }
+    
+    /**
+     * Prepare removal data for storage
+     */
+    private function prepareRemovalData($data) {
+        return [
+            'indication' => $data['indication'],
+            'indication_notes' => !empty($data['indication_notes']) ? Sanitizer::string($data['indication_notes']) : null,
+            'date_of_removal' => $data['date_of_removal'],
+            'number_of_catheter_days' => (int)$data['number_of_catheter_days'],
+            'catheter_tip_intact' => isset($data['catheter_tip_intact']) ? 1 : 0,
+            'removal_complications' => !empty($data['removal_complications']) ? Sanitizer::string($data['removal_complications']) : null,
+            'final_notes' => !empty($data['final_notes']) ? Sanitizer::string($data['final_notes']) : null,
+            'patient_satisfaction' => !empty($data['patient_satisfaction']) ? $data['patient_satisfaction'] : null
+        ];
     }
     
     /**

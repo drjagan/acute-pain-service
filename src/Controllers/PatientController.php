@@ -128,6 +128,10 @@ class PatientController extends BaseController {
         $outcomeModel = new \Models\FunctionalOutcome();
         $outcomes = $outcomeModel->getPatientOutcomes($id);
         
+        // Get patient's catheter removals
+        $removalModel = new \Models\CatheterRemoval();
+        $removals = $removalModel->getPatientRemovals($id);
+        
         // Get active catheters for drug regime dropdown
         $activeCatheters = $catheterModel->getPatientCatheters($id, true); // active only
         
@@ -137,6 +141,7 @@ class PatientController extends BaseController {
             'catheters' => $catheters,
             'regimes' => $regimes,
             'outcomes' => $outcomes,
+            'removals' => $removals,
             'activeCatheters' => $activeCatheters
         ]);
     }

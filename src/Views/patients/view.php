@@ -12,16 +12,113 @@
         <a href="<?= BASE_URL ?>/patients" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Back to List
         </a>
+        </div>
     </div>
 </div>
 
+<!-- Catheter Removals Section -->
 <div class="row">
-    <!-- Patient Demographics -->
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="card mb-3">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-person-badge"></i> Patient Information</h5>
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-archive"></i> Catheter Removals</h5>
             </div>
+            <div class="card-body">
+                <?php if (empty($removals)): ?>
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No catheter removals documented for this patient yet.
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Catheter Type</th>
+                                    <th>Insertion Date</th>
+                                    <th>Removal Date</th>
+                                    <th>Days</th>
+                                    <th>Indication</th>
+                                    <th>Tip Intact</th>
+                                    <th>Satisfaction</th>
+                                    <th>Complications</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($removals as $removal): ?>
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            <?= e(ucwords(str_replace('_', ' ', $removal['catheter_type']))) ?>
+                                        </span>
+                                    </td>
+                                    <td><?= formatDate($removal['date_of_insertion']) ?></td>
+                                    <td><?= formatDate($removal['date_of_removal']) ?></td>
+                                    <td>
+                                        <span class="badge bg-<?= $removal['number_of_catheter_days'] > 7 ? 'warning' : 'success' ?>">
+                                            <?= $removal['number_of_catheter_days'] ?> days
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small><?= e(ucwords(str_replace('_', ' ', $removal['indication']))) ?></small>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($removal['catheter_tip_intact']): ?>
+                                            <i class="bi bi-check-circle text-success fs-5" title="Intact"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-exclamation-triangle text-danger fs-5" title="Not intact"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($removal['patient_satisfaction']): ?>
+                                            <?php
+                                            $satisfactionClass = match($removal['patient_satisfaction']) {
+                                                'excellent' => 'success',
+                                                'good' => 'primary',
+                                                'fair' => 'warning',
+                                                'poor' => 'danger',
+                                                default => 'secondary'
+                                            };
+                                            ?>
+                                            <span class="badge bg-<?= $satisfactionClass ?>">
+                                                <?= ucfirst($removal['patient_satisfaction']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <em class="text-muted">N/A</em>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if ($removal['removal_complications']): ?>
+                                            <i class="bi bi-exclamation-triangle text-danger fs-5" title="Has complications"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-check-circle text-success fs-5" title="No complications"></i>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="<?= BASE_URL ?>/catheters/viewRemoval/<?= $removal['id'] ?>" 
+                                               class="btn btn-outline-primary"
+                                               title="View Removal">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $removal['catheter_id'] ?>" 
+                                               class="btn btn-outline-info"
+                                               title="View Catheter">
+                                                <i class="bi bi-file-medical"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
             <div class="card-body">
                 <table class="table table-sm">
                     <tr>
