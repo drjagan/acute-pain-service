@@ -49,8 +49,8 @@ class PatientController extends BaseController {
      * Show create patient form (Screen 1)
      */
     public function create() {
-        // Only attending and resident can create patients
-        $this->requireRole(['attending', 'resident']);
+        // Only attending, resident, and admin can create patients
+        $this->requireRole(['attending', 'resident', 'admin']);
         
         // Load lookup data
         $comorbidities = $this->getLookupData('lookup_comorbidities');
@@ -67,7 +67,7 @@ class PatientController extends BaseController {
      * Store new patient
      */
     public function store() {
-        $this->requireRole(['attending', 'resident']);
+        $this->requireRole(['attending', 'resident', 'admin']);
         $this->validateCSRF();
         
         // Validate input
@@ -117,7 +117,7 @@ class PatientController extends BaseController {
      * Show edit patient form
      */
     public function edit($id) {
-        $this->requireRole(['attending', 'resident']);
+        $this->requireRole(['attending', 'resident', 'admin']);
         
         $patient = $this->patientModel->find($id);
         
@@ -145,7 +145,7 @@ class PatientController extends BaseController {
      * Update patient
      */
     public function update($id) {
-        $this->requireRole(['attending', 'resident']);
+        $this->requireRole(['attending', 'resident', 'admin']);
         $this->validateCSRF();
         
         $patient = $this->patientModel->find($id);

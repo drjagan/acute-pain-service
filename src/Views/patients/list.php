@@ -3,7 +3,7 @@
         <h1 class="h2">Patients</h1>
         <p class="text-muted">Manage patient registrations and demographics</p>
     </div>
-    <?php if (hasAnyRole(['attending', 'resident'])): ?>
+    <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
     <div>
         <a href="<?= BASE_URL ?>/patients/create" class="btn btn-primary">
             <i class="bi bi-person-plus"></i> Register New Patient
@@ -41,7 +41,7 @@
         <?php if (empty($patients)): ?>
             <div class="alert alert-info">
                 <i class="bi bi-info-circle"></i> No patients found. 
-                <?php if (hasAnyRole(['attending', 'resident'])): ?>
+                <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
                     <a href="<?= BASE_URL ?>/patients/create">Register the first patient</a>
                 <?php endif; ?>
             </div>
@@ -92,7 +92,7 @@
                                        title="View">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <?php if (hasAnyRole(['attending', 'resident'])): ?>
+                                    <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
                                     <a href="<?= BASE_URL ?>/patients/edit/<?= $patient['id'] ?>" 
                                        class="btn btn-outline-secondary" 
                                        title="Edit">
