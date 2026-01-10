@@ -23,20 +23,30 @@ body {
 .mobile-menu-toggle {
     position: fixed;
     top: 70px;
-    left: 10px;
-    z-index: 1040;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    left: 15px;
+    z-index: 1030;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .mobile-menu-toggle i {
-    font-size: 24px;
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+@media (max-width: 767.98px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-menu-toggle {
+        display: none !important;
+    }
 }
 
 /* ===================================
