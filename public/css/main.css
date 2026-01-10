@@ -17,35 +17,65 @@ body {
 }
 
 /* ===================================
-   MOBILE MENU TOGGLE BUTTON
+   HEADER / NAVBAR
    ================================== */
 
-.mobile-menu-toggle {
-    position: fixed;
-    top: 70px;
-    left: 15px;
-    z-index: 1030;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    font-size: 14px;
-    font-weight: 500;
+.navbar {
+    min-height: 56px;
+    z-index: 1040;
 }
 
-.mobile-menu-toggle i {
-    font-size: 20px;
-    margin-right: 5px;
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
+/* Mobile Menu Toggle in Header */
+.mobile-menu-toggle-header {
+    border: none;
+    background: transparent;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.mobile-menu-toggle-header:hover,
+.mobile-menu-toggle-header:focus {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.mobile-menu-toggle-header:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* User Dropdown in Header */
+.navbar .dropdown-toggle::after {
+    display: none;
+}
+
+.navbar .dropdown-menu {
+    margin-top: 0.5rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Header Layout */
 @media (max-width: 767.98px) {
-    .mobile-menu-toggle {
-        display: block;
+    .navbar-brand {
+        font-size: 1rem;
+        text-align: center;
+    }
+    
+    .navbar .nav-link {
+        padding: 0.5rem 0.75rem;
     }
 }
 
-@media (min-width: 768px) {
-    .mobile-menu-toggle {
-        display: none !important;
+@media (max-width: 575.98px) {
+    .navbar-brand i {
+        font-size: 1.25rem;
     }
 }
 

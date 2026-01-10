@@ -21,11 +21,6 @@
 <body>
     <?php include VIEWS_PATH . '/components/header.php'; ?>
     
-    <!-- Mobile Toggle Button -->
-    <button class="btn btn-primary d-md-none mobile-menu-toggle position-fixed" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-        <i class="bi bi-list"></i>
-    </button>
-    
     <!-- Mobile Sidebar (Offcanvas) -->
     <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
         <div class="offcanvas-header bg-primary text-white">
