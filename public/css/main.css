@@ -1,0 +1,525 @@
+/* ===================================
+   ACUTE PAIN SERVICE - RESPONSIVE STYLES
+   ================================== */
+
+/* ===================================
+   GENERAL MOBILE-FRIENDLY STYLES
+   ================================== */
+
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-size: 14px;
+    overflow-x: hidden;
+}
+
+/* ===================================
+   MOBILE MENU TOGGLE BUTTON
+   ================================== */
+
+.mobile-menu-toggle {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    z-index: 1040;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.mobile-menu-toggle i {
+    font-size: 24px;
+}
+
+/* ===================================
+   SIDEBAR NAVIGATION
+   ================================== */
+
+.sidebar {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+/* Sidebar on Desktop */
+@media (min-width: 768px) {
+    .sidebar {
+        display: block !important;
+    }
+    
+    .mobile-menu-toggle {
+        display: none;
+    }
+}
+
+/* Sidebar on Mobile (Offcanvas) */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: -100%;
+        width: 280px;
+        transition: left 0.3s ease;
+        z-index: 1045;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    .offcanvas-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
+
+/* ===================================
+   NAVIGATION LINKS
+   ================================== */
+
+.sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    color: #333;
+    border-radius: 0;
+    transition: all 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar .nav-link.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.sidebar .nav-link i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Touch-friendly navigation on mobile */
+@media (max-width: 767.98px) {
+    .sidebar .nav-link {
+        padding: 1rem 1.5rem;
+        font-size: 16px;
+    }
+}
+
+/* ===================================
+   MAIN CONTENT AREA
+   ================================== */
+
+main {
+    padding-top: 20px;
+}
+
+@media (min-width: 768px) {
+    main {
+        margin-left: 0;
+    }
+}
+
+/* ===================================
+   RESPONSIVE TABLES
+   ================================== */
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+}
+
+/* Make tables scroll horizontally on mobile */
+@media (max-width: 991.98px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    
+    .table-responsive table {
+        margin-bottom: 0;
+    }
+    
+    /* Minimum column widths for readability */
+    .table th,
+    .table td {
+        white-space: nowrap;
+        min-width: 100px;
+    }
+    
+    /* Allow action columns to be narrower */
+    .table th:last-child,
+    .table td:last-child {
+        min-width: 80px;
+    }
+}
+
+/* ===================================
+   CARDS & FORMS
+   ================================== */
+
+/* Card spacing on mobile */
+@media (max-width: 767.98px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Form spacing and inputs */
+.form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control,
+.form-select {
+    font-size: 14px;
+}
+
+/* Touch-friendly form controls on mobile */
+@media (max-width: 767.98px) {
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+        min-height: 48px; /* Touch-friendly */
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+    }
+    
+    .btn-sm {
+        min-height: 40px;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* ===================================
+   BUTTONS
+   ================================== */
+
+.btn {
+    transition: all 0.2s;
+}
+
+/* Button groups on mobile */
+@media (max-width: 767.98px) {
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* ===================================
+   BADGES & LABELS
+   ================================== */
+
+.badge {
+    font-size: 85%;
+    padding: 0.35em 0.65em;
+}
+
+@media (max-width: 767.98px) {
+    .badge {
+        font-size: 90%;
+        padding: 0.4em 0.7em;
+    }
+}
+
+/* ===================================
+   ALERTS & FLASH MESSAGES
+   ================================== */
+
+.flash-messages .alert {
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .flash-messages {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    .flash-messages .alert {
+        border-radius: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* ===================================
+   HEADER
+   ================================== */
+
+@media (max-width: 767.98px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* ===================================
+   PAGE HEADERS & TITLES
+   ================================== */
+
+h1, h2, h3 {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    h1, .h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2, .h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3, .h3 {
+        font-size: 1.25rem;
+    }
+    
+    h5, .h5 {
+        font-size: 1rem;
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   ================================== */
+
+/* Responsive text sizes */
+@media (max-width: 767.98px) {
+    .text-muted {
+        font-size: 0.875rem;
+    }
+    
+    small, .small {
+        font-size: 0.8rem;
+    }
+}
+
+/* Hide on mobile */
+.d-mobile-none {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .d-mobile-none {
+        display: block;
+    }
+}
+
+/* Show only on mobile */
+.d-mobile-only {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .d-mobile-only {
+        display: none;
+    }
+}
+
+/* ===================================
+   DROPDOWNS
+   ================================== */
+
+@media (max-width: 767.98px) {
+    .dropdown-menu {
+        min-width: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+        font-size: 14px;
+    }
+}
+
+/* ===================================
+   MODALS
+   ================================== */
+
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+    
+    .modal-body {
+        padding: 1.25rem;
+    }
+}
+
+/* ===================================
+   PAGINATION
+   ================================== */
+
+@media (max-width: 767.98px) {
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 14px;
+    }
+}
+
+/* ===================================
+   CONTENT SPACING
+   ================================== */
+
+.content-area {
+    min-height: calc(100vh - 200px);
+}
+
+@media (max-width: 767.98px) {
+    .content-area {
+        padding-bottom: 3rem;
+    }
+}
+
+/* ===================================
+   FOOTER
+   ================================== */
+
+footer {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid #dee2e6;
+}
+
+@media (max-width: 767.98px) {
+    footer {
+        font-size: 0.875rem;
+        text-align: center;
+    }
+}
+
+/* ===================================
+   FORM SECTIONS
+   ================================== */
+
+/* Multi-column forms stack on mobile */
+@media (max-width: 767.98px) {
+    .row.g-3 > [class*="col-"] {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* ===================================
+   SCROLLBARS (WebKit only)
+   ================================== */
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ===================================
+   ACCESSIBILITY
+   ================================== */
+
+/* Focus visible for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #0d6efd;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 9999;
+}
+
+.skip-to-main:focus {
+    top: 0;
+}
+
+/* ===================================
+   PRINT STYLES
+   ================================== */
+
+@media print {
+    .sidebar,
+    .mobile-menu-toggle,
+    .navbar,
+    footer,
+    .btn,
+    .flash-messages {
+        display: none !important;
+    }
+    
+    main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .table {
+        font-size: 10pt;
+    }
+}
