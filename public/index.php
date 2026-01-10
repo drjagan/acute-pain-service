@@ -42,6 +42,12 @@ $routes = [
     
     // Dashboard
     'GET /dashboard' => 'DashboardController@index',
+    
+    // Patients (Screen 1)
+    'GET /patients' => 'PatientController@index',
+    'GET /patients/create' => 'PatientController@create',
+    'POST /patients/store' => 'PatientController@store',
+    'POST /patients/check-hospital-number' => 'PatientController@checkHospitalNumber',
 ];
 
 $route = $method . ' ' . $uri;

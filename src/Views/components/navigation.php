@@ -6,11 +6,11 @@
             </a>
         </li>
         
-        <!-- Phase 2+ Navigation Items -->
-        <?php if (hasAnyRole(['attending', 'resident'])): ?>
+        <!-- Phase 2: Active Items -->
+        <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-person-plus"></i> Patients <small>(Phase 2)</small>
+            <a class="nav-link <?= isRoute('patients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients">
+                <i class="bi bi-person-plus"></i> Patients
             </a>
         </li>
         <?php endif; ?>
