@@ -1,36 +1,114 @@
-# Dependencies
-/vendor/
-node_modules/
+# Acute Pain Service - Git Ignore File
+# Version 1.0.0
 
-# Environment files
+# Configuration Files (sensitive)
+config/config.php
+config/.installed
+
+# Environment Files
 .env
 .env.local
 .env.production
 
 # Logs
-/logs/*.log
-/logs/*.txt
+logs/*.log
+logs/*.txt
+*.log
 
-# Uploads
-/public/uploads/*
-!/public/uploads/.htaccess
+# Uploads (user files)
+public/uploads/*
+!public/uploads/.gitkeep
 
-# Exports
-/public/exports/*
-!/public/exports/.htaccess
+# Exports (generated files)
+public/exports/*
+!public/exports/.gitkeep
 
-# IDE
-.idea/
+# Cache
+cache/*
+!cache/.gitkeep
+
+# Temporary Files
+tmp/*
+temp/*
+*.tmp
+
+# IDE / Editor Files
 .vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.phpstorm.meta.php
+_ide_helper.php
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Composer
+/vendor/
+composer.lock
+
+# NPM / Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Backup Files
+*.bak
+*.backup
+*.old
 *.swp
-*.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
+# Database Dumps
+*.sql.gz
+*.sql.zip
+database_backup_*.sql
 
-# Temporary files
-*.tmp
-*.bak
-*.cache
+# Session Files
+sessions/*
+
+# Installation Wizard (delete after install)
+# Uncomment after installation:
+# install/
+
+# Test Files (optional)
+phpunit.xml
+tests/_output/*
+
+# Documentation Build
+docs/_build/
+
+# Sensitive Data
+*.pem
+*.key
+*.crt
+secrets.json
+credentials.json
+
+# Version Control
+.git/
+.gitattributes
+
+# PHP CS Fixer
+.php_cs
+.php_cs.cache
+.php-cs-fixer.cache
+
+# PHPStan
+phpstan.neon
+.phpstan.cache
+
+# Coverage Reports
+coverage/
+.coverage
+
+# Keep empty directories
+!.gitkeep
