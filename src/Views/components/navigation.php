@@ -46,8 +46,8 @@
             </h6>
         </li>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-people"></i> Users <small>(Phase 2)</small>
+            <a class="nav-link <?= isRoute('users') ? 'active' : '' ?>" href="<?= BASE_URL ?>/users">
+                <i class="bi bi-people"></i> Users
             </a>
         </li>
         <li class="nav-item">
