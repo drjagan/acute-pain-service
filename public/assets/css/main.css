@@ -613,3 +613,83 @@ button:focus-visible,
     text-align: center;
     color: #6c757d;
 }
+
+/* ===================================
+   MOBILE VIEW FIXES
+   ================================== */
+
+/* Fix sidebar overlap on mobile */
+@media (max-width: 767.98px) {
+    main.col-md-9 {
+        margin-left: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        width: 100% !important;
+    }
+    
+    .content-area {
+        margin-top: 0.5rem !important;
+    }
+    
+    /* Ensure cards don't overflow */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Better button layout on mobile */
+    .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    /* Stack flex items on mobile */
+    .d-flex.flex-md-row {
+        flex-direction: column !important;
+    }
+    
+    /* Better table responsiveness */
+    .table-responsive {
+        margin: 0 -0.5rem;
+    }
+    
+    .table-sm {
+        font-size: 0.875rem;
+    }
+    
+    /* Smaller badges on mobile */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+    }
+    
+    /* Better card headers on mobile */
+    .card-header h6,
+    .card-header h5 {
+        font-size: 0.95rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 575.98px) {
+    .content-area {
+        padding: 0 !important;
+    }
+    
+    h1, .h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2, .h2 {
+        font-size: 1.35rem;
+    }
+    
+    h3, .h3 {
+        font-size: 1.2rem;
+    }
+    
+    /* Even smaller tables on very small screens */
+    .table-sm th,
+    .table-sm td {
+        padding: 0.25rem;
+        font-size: 0.8rem;
+    }
+}

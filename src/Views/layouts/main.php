@@ -61,7 +61,7 @@
                 <?php endif; ?>
                 
                 <!-- Content -->
-                <div class="content-area mt-4 pb-5">
+                <div class="content-area mt-2 mt-md-3 pb-4">
                     <?= $content ?>
                 </div>
             </main>
