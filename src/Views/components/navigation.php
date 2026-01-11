@@ -9,7 +9,7 @@
         <!-- My Patients - For Physicians (Attending, Residents, and Admins who are also Attending) -->
         <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link <?= isRoute('mypatients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients/myPatients">
+            <a class="nav-link <?= isRoute('patients/myPatients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients/myPatients">
                 <i class="bi bi-person-heart"></i> My Patients
             </a>
         </li>
@@ -18,7 +18,7 @@
         <!-- Phase 2: Active Items -->
         <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
-            <a class="nav-link <?= isRoute('patients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients">
+            <a class="nav-link <?= (isRoute('patients') && !isRoute('patients/myPatients')) ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients">
                 <i class="bi bi-person-plus"></i> Patients
             </a>
         </li>
