@@ -296,38 +296,84 @@
 })();
 
 /**
- * Global Patient Select2 Initialization
- * Initialize searchable patient dropdowns with AJAX
+ * PATIENT SELECT2 SEARCHABLE DROPDOWN
+ * Reusable component for patient selection with search functionality
  */
-function initPatientSelect2(selector, options = {}) {
-    if (typeof jQuery === 'undefined' || typeof $.fn.select2 === 'undefined') {
-        console.error('jQuery or Select2 not loaded');
-        return;
+
+// Ensure window.APS namespace exists
+window.APS = window.APS || {};
+
+/**
+ * Initialize Patient Select2 Dropdown
+ * @param {string|jQuery|HTMLElement} selector - The select element(s) to initialize
+ * @param {object} options - Optional Select2 configuration overrides
+ */
+window.APS.initPatientSelect2 = function(selector, options = {}) {
+    // Check dependencies
+    if (typeof jQuery === 'undefined') {
+        console.error('APS Patient Select2: jQuery is not loaded');
+        return false;
     }
+    
+    if (typeof jQuery.fn.select2 === 'undefined') {
+        console.error('APS Patient Select2: Select2 plugin is not loaded');
+        return false;
+    }
+    
+    if (!window.BASE_URL) {
+        console.error('APS Patient Select2: BASE_URL is not defined');
+        return false;
+    }
+    
+    const $elements = $(selector);
+    
+    if ($elements.length === 0) {
+        console.warn('APS Patient Select2: No elements found for selector', selector);
+        return false;
+    }
+    
+    console.log('APS Patient Select2: Initializing', $elements.length, 'element(s)');
     
     const defaults = {
         theme: 'bootstrap-5',
         placeholder: 'Search by name or hospital number',
         allowClear: true,
         minimumInputLength: 0,
+        width: '100%',
+        dropdownAutoWidth: true,
         ajax: {
             url: window.BASE_URL + '/patients/searchAjax',
             dataType: 'json',
             delay: 250,
             data: function (params) {
                 return {
-                    q: params.term,
+                    q: params.term || '',
                     page: params.page || 1
                 };
             },
             processResults: function (data, params) {
                 params.page = params.page || 1;
+                
+                console.log('APS Patient Select2: AJAX response', data);
+                
+                if (!data.results || !Array.isArray(data.results)) {
+                    console.error('APS Patient Select2: Invalid response format', data);
+                    return { results: [] };
+                }
+                
                 return {
                     results: data.results,
                     pagination: {
-                        more: data.pagination.more
+                        more: data.pagination ? data.pagination.more : false
                     }
                 };
+            },
+            error: function(xhr, status, error) {
+                console.error('APS Patient Select2: AJAX error', {
+                    status: status,
+                    error: error,
+                    response: xhr.responseText
+                });
             },
             cache: true
         },
@@ -336,31 +382,88 @@ function initPatientSelect2(selector, options = {}) {
                 return patient.text;
             }
             
-            if (!patient.hospital_number) {
+            // For placeholder or empty
+            if (!patient.id || patient.id === '') {
                 return patient.text;
             }
             
-            return $('<div>' + 
-                '<strong>' + patient.text.split(' (HN:')[0] + '</strong><br>' +
-                '<small class="text-muted">HN: ' + patient.hospital_number + ' | ' + 
-                patient.age + 'y/' + patient.gender + '</small>' +
+            // If hospital_number doesn't exist, just show text
+            if (!patient.hospital_number) {
+                return $('<span>' + patient.text + '</span>');
+            }
+            
+            // Format with patient details
+            var patientName = patient.text.split(' (HN:')[0];
+            return $('<div class="select2-patient-result">' + 
+                '<div class="fw-bold">' + patientName + '</div>' +
+                '<div class="small text-muted">HN: ' + patient.hospital_number + ' | ' + 
+                patient.age + 'y/' + patient.gender + '</div>' +
                 '</div>');
         },
         templateSelection: function(patient) {
-            return patient.text || 'Search...';
+            return patient.text || patient.id || 'Select a patient';
+        },
+        language: {
+            searching: function() {
+                return 'Searching patients...';
+            },
+            noResults: function() {
+                return 'No patients found';
+            },
+            errorLoading: function() {
+                return 'Error loading patients';
+            },
+            inputTooShort: function() {
+                return 'Type to search...';
+            }
         }
     };
     
     const settings = $.extend(true, {}, defaults, options);
     
-    $(selector).select2(settings);
-}
+    // Initialize each element
+    $elements.each(function() {
+        const $elem = $(this);
+        
+        // Skip if already initialized
+        if ($elem.hasClass('select2-hidden-accessible')) {
+            console.log('APS Patient Select2: Element already initialized, skipping');
+            return;
+        }
+        
+        // Skip if disabled
+        if ($elem.is(':disabled')) {
+            console.log('APS Patient Select2: Element is disabled, skipping');
+            return;
+        }
+        
+        try {
+            $elem.select2(settings);
+            console.log('APS Patient Select2: Successfully initialized element', $elem.attr('id') || $elem.attr('name'));
+        } catch (error) {
+            console.error('APS Patient Select2: Initialization error', error);
+        }
+    });
+    
+    return true;
+};
 
-// Auto-initialize all patient select2 fields on page load
-$(document).ready(function() {
-    if ($('.patient-select2').length > 0 && !$('.patient-select2').hasClass('select2-hidden-accessible')) {
-        $('.patient-select2:not([disabled])').each(function() {
-            initPatientSelect2(this);
-        });
+/**
+ * Auto-initialize all .patient-select2 elements on page load
+ */
+jQuery(document).ready(function($) {
+    console.log('APS Patient Select2: DOM ready, checking for elements...');
+    
+    const $patientSelects = $('.patient-select2');
+    
+    if ($patientSelects.length > 0) {
+        console.log('APS Patient Select2: Found', $patientSelects.length, 'element(s) to initialize');
+        
+        // Wait a bit to ensure all scripts are loaded
+        setTimeout(function() {
+            window.APS.initPatientSelect2('.patient-select2');
+        }, 100);
+    } else {
+        console.log('APS Patient Select2: No .patient-select2 elements found on this page');
     }
 });

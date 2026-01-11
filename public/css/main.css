@@ -563,3 +563,53 @@ button:focus-visible,
         font-size: 10pt;
     }
 }
+
+/* ===================================
+   SELECT2 CUSTOM STYLES
+   ================================== */
+
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 38px;
+}
+
+.select2-patient-result {
+    padding: 4px 0;
+}
+
+.select2-patient-result .fw-bold {
+    color: #212529;
+    margin-bottom: 2px;
+}
+
+.select2-patient-result .text-muted {
+    color: #6c757d !important;
+    font-size: 0.875rem;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown {
+    border-color: #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.select2-container--bootstrap-5 .select2-results__option--highlighted {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.select2-container--bootstrap-5 .select2-results__option--highlighted .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Loading state */
+.select2-container--bootstrap-5 .select2-results__option--loading {
+    padding: 8px;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* No results */
+.select2-container--bootstrap-5 .select2-results__message {
+    padding: 8px;
+    text-align: center;
+    color: #6c757d;
+}

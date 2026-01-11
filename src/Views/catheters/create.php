@@ -306,18 +306,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
 })();
 
-// Patient Select2 auto-initialized via app.js
-// Add custom event handler for patient info display
-$(document).ready(function() {
-    $('#patient_id').on('select2:select', function (e) {
-        var data = e.params.data;
-        if (data.hospital_number) {
-            document.getElementById('patient-details').innerHTML = 
-                'HN: ' + data.hospital_number + ' | ' + 
-                data.age + 'y/' + data.gender;
-            document.getElementById('patient-info').style.display = 'block';
+// Patient Select2 - Manual initialization with event handlers
+jQuery(document).ready(function($) {
+    <?php if (!$selectedPatient): ?>
+    console.log('=== CATHETER CREATE: Select2 Debug ===');
+    console.log('jQuery loaded:', typeof jQuery !== 'undefined');
+    console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
+    console.log('BASE_URL:', window.BASE_URL);
+    
+    // Wait for APS namespace to be available
+    setTimeout(function() {
+        const $patientSelect = $('#patient_id');
+        
+        if (!$patientSelect.hasClass('select2-hidden-accessible')) {
+            console.log('Manually initializing patient select...');
+            if (window.APS && window.APS.initPatientSelect2) {
+                window.APS.initPatientSelect2('#patient_id');
+            }
         }
-    });
+        
+        // Add custom event handler for patient info display
+        $patientSelect.on('select2:select', function (e) {
+            var data = e.params.data;
+            console.log('Patient selected:', data);
+            if (data.hospital_number) {
+                document.getElementById('patient-details').innerHTML = 
+                    'HN: ' + data.hospital_number + ' | ' + 
+                    data.age + 'y/' + data.gender;
+                document.getElementById('patient-info').style.display = 'block';
+            }
+        });
+    }, 500);
+    <?php endif; ?>
 });
 </script>
 

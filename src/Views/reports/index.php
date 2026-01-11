@@ -168,4 +168,28 @@ function setThisYear() {
     document.getElementById('end_date').value = lastDay.toISOString().split('T')[0];
 }
 </script>
-<!-- Patient Select2 auto-initialized via app.js -->
+
+<!-- Patient Select2 Debugging & Manual Init (fallback) -->
+<script>
+jQuery(document).ready(function($) {
+    console.log('=== REPORTS PAGE: Select2 Debug ===');
+    console.log('jQuery loaded:', typeof jQuery !== 'undefined');
+    console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
+    console.log('BASE_URL:', window.BASE_URL);
+    console.log('APS namespace:', typeof window.APS !== 'undefined');
+    console.log('Patient select elements:', $('.patient-select2').length);
+    
+    // If auto-init didn't work, try manual init after 500ms
+    setTimeout(function() {
+        const $patientSelect = $('#patient_select');
+        if (!$patientSelect.hasClass('select2-hidden-accessible')) {
+            console.log('Auto-init failed, manually initializing...');
+            if (window.APS && window.APS.initPatientSelect2) {
+                window.APS.initPatientSelect2('#patient_select');
+            }
+        } else {
+            console.log('Select2 already initialized successfully');
+        }
+    }, 500);
+});
+</script>
