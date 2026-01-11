@@ -197,12 +197,12 @@ $catheters = $report['catheters'];
                         <?php foreach ($catheter['pain_analysis'] as $pa): ?>
                         <tr>
                             <td><strong>Day <?= $pa['pod'] ?></strong></td>
-                            <td><?= number_format($pa['avg_baseline_static'], 1) ?></td>
-                            <td><?= number_format($pa['avg_baseline_dynamic'], 1) ?></td>
-                            <td><?= number_format($pa['avg_15min_static'], 1) ?></td>
-                            <td><?= number_format($pa['avg_15min_dynamic'], 1) ?></td>
-                            <td class="<?= $pa['avg_improvement'] >= 2 ? 'table-success' : 'table-warning' ?>">
-                                <strong><?= number_format($pa['avg_improvement'], 1) ?> points</strong>
+                            <td><?= number_format($pa['avg_baseline_static'] ?? 0, 1) ?></td>
+                            <td><?= number_format($pa['avg_baseline_dynamic'] ?? 0, 1) ?></td>
+                            <td><?= number_format($pa['avg_15min_static'] ?? 0, 1) ?></td>
+                            <td><?= number_format($pa['avg_15min_dynamic'] ?? 0, 1) ?></td>
+                            <td class="<?= ($pa['avg_improvement'] ?? 0) >= 2 ? 'table-success' : 'table-warning' ?>">
+                                <strong><?= number_format($pa['avg_improvement'] ?? 0, 1) ?> points</strong>
                             </td>
                         </tr>
                         <?php endforeach; ?>

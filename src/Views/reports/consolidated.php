@@ -220,18 +220,20 @@ $endDate = $period['end'];
         <div class="row mb-3">
             <div class="col-md-6">
                 <h6>Effective Analgesia Rate</h6>
-                <h3 class="text-<?= $report['pain_stats']['effective_rate'] >= 85 ? 'success' : 'warning' ?>">
-                    <?= number_format($report['pain_stats']['effective_rate'], 1) ?>%
+                <h3 class="text-<?= ($report['pain_stats']['effective_rate'] ?? 0) >= 85 ? 'success' : 'warning' ?>">
+                    <?= number_format($report['pain_stats']['effective_rate'] ?? 0, 1) ?>%
                 </h3>
                 <p class="text-muted">Target: >85%</p>
             </div>
             <div class="col-md-6">
                 <h6>Doses per Catheter</h6>
-                <?php if ($report['pain_stats']['doses_per_catheter']): ?>
+                <?php if ($report['pain_stats']['doses_per_catheter'] && $report['pain_stats']['doses_per_catheter']['mean_doses'] !== null): ?>
                 <p>
-                    Mean: <strong><?= number_format($report['pain_stats']['doses_per_catheter']['mean_doses'], 1) ?></strong><br>
-                    Range: <?= $report['pain_stats']['doses_per_catheter']['min_doses'] ?> - <?= $report['pain_stats']['doses_per_catheter']['max_doses'] ?>
+                    Mean: <strong><?= number_format($report['pain_stats']['doses_per_catheter']['mean_doses'] ?? 0, 1) ?></strong><br>
+                    Range: <?= $report['pain_stats']['doses_per_catheter']['min_doses'] ?? 0 ?> - <?= $report['pain_stats']['doses_per_catheter']['max_doses'] ?? 0 ?>
                 </p>
+                <?php else: ?>
+                <p class="text-muted">No data available</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -252,10 +254,10 @@ $endDate = $period['end'];
                     <?php foreach ($report['pain_stats']['vnrs_by_pod'] as $pod): ?>
                     <tr>
                         <td><strong>Day <?= $pod['pod'] ?></strong></td>
-                        <td><?= number_format($pod['mean_static'], 1) ?>/10</td>
-                        <td><?= number_format($pod['mean_dynamic'], 1) ?>/10</td>
-                        <td class="<?= $pod['mean_improvement'] >= 2 ? 'table-success' : 'table-warning' ?>">
-                            <strong><?= number_format($pod['mean_improvement'], 1) ?> points</strong>
+                        <td><?= number_format($pod['mean_static'] ?? 0, 1) ?>/10</td>
+                        <td><?= number_format($pod['mean_dynamic'] ?? 0, 1) ?>/10</td>
+                        <td class="<?= ($pod['mean_improvement'] ?? 0) >= 2 ? 'table-success' : 'table-warning' ?>">
+                            <strong><?= number_format($pod['mean_improvement'] ?? 0, 1) ?> points</strong>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -339,17 +341,19 @@ $endDate = $period['end'];
         <div class="row mb-3">
             <div class="col-md-4">
                 <h6>Number of Catheter Days</h6>
-                <?php if ($report['removal_stats']['catheter_days']): ?>
+                <?php if ($report['removal_stats']['catheter_days'] && $report['removal_stats']['catheter_days']['mean_days'] !== null): ?>
                 <p>
-                    Mean: <strong><?= number_format($report['removal_stats']['catheter_days']['mean_days'], 1) ?></strong> days<br>
-                    Range: <?= $report['removal_stats']['catheter_days']['min_days'] ?> - <?= $report['removal_stats']['catheter_days']['max_days'] ?> days
+                    Mean: <strong><?= number_format($report['removal_stats']['catheter_days']['mean_days'] ?? 0, 1) ?></strong> days<br>
+                    Range: <?= $report['removal_stats']['catheter_days']['min_days'] ?? 0 ?> - <?= $report['removal_stats']['catheter_days']['max_days'] ?? 0 ?> days
                 </p>
+                <?php else: ?>
+                <p class="text-muted">No data available</p>
                 <?php endif; ?>
             </div>
             <div class="col-md-4">
                 <h6>Catheter Tip Integrity</h6>
-                <h3 class="text-<?= $report['removal_stats']['tip_integrity_rate'] >= 95 ? 'success' : 'warning' ?>">
-                    <?= number_format($report['removal_stats']['tip_integrity_rate'], 1) ?>%
+                <h3 class="text-<?= ($report['removal_stats']['tip_integrity_rate'] ?? 0) >= 95 ? 'success' : 'warning' ?>">
+                    <?= number_format($report['removal_stats']['tip_integrity_rate'] ?? 0, 1) ?>%
                 </h3>
                 <p class="text-muted">Intact on removal</p>
             </div>
@@ -453,9 +457,9 @@ $endDate = $period['end'];
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="border p-3 rounded <?= $report['pain_stats']['effective_rate'] >= 85 ? 'bg-success text-white' : 'bg-warning' ?>">
+                <div class="border p-3 rounded <?= ($report['pain_stats']['effective_rate'] ?? 0) >= 85 ? 'bg-success text-white' : 'bg-warning' ?>">
                     <h6 class="mb-1">Effective Analgesia</h6>
-                    <h3 class="mb-0"><?= number_format($report['pain_stats']['effective_rate'], 1) ?>%</h3>
+                    <h3 class="mb-0"><?= number_format($report['pain_stats']['effective_rate'] ?? 0, 1) ?>%</h3>
                     <small>Target: >85%</small>
                 </div>
             </div>
