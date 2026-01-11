@@ -40,6 +40,9 @@ class ReportController extends BaseController {
     public function individual($patientId = null) {
         $this->requireAuth();
         
+        // Accept patient ID from URL parameter or GET request
+        $patientId = $patientId ?? $_GET['id'] ?? null;
+        
         if (!$patientId) {
             Flash::error('Patient ID is required');
             return $this->redirect('/reports');

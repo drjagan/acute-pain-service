@@ -462,7 +462,7 @@ $endDate = $period['end'];
             <div class="col-md-3 mb-3">
                 <div class="border p-3 rounded">
                     <h6 class="text-muted mb-1">Avg Catheter Days</h6>
-                    <h3 class="mb-0"><?= $report['removal_stats']['catheter_days'] ? number_format($report['removal_stats']['catheter_days']['mean_days'], 1) : 'N/A' ?></h3>
+                    <h3 class="mb-0"><?= $report['removal_stats']['catheter_days'] ? number_format($report['removal_stats']['catheter_days']['mean_days'] ?? 0, 1) : 'N/A' ?></h3>
                 </div>
             </div>
         </div>
