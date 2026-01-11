@@ -1,0 +1,64 @@
+# Commands to Push v1.0.0 to GitHub
+
+## Step 1: Add GitHub as Remote Repository
+
+Replace YOUR_USERNAME with your GitHub username:
+
+git remote add origin https://github.com/YOUR_USERNAME/acute-pain-service.git
+
+# Or if using SSH:
+# git remote add origin git@github.com:YOUR_USERNAME/acute-pain-service.git
+
+
+## Step 2: Verify Remote was Added
+
+git remote -v
+
+
+## Step 3: Push Main Branch with Tags
+
+git push -u origin main
+git push origin v1.0.0
+
+
+## Step 4: Verify on GitHub
+
+Go to: https://github.com/YOUR_USERNAME/acute-pain-service
+- Check that all files are present
+- Verify the v1.0.0 tag appears under "Releases"
+- Review the commit history
+
+
+## Alternative: Push All Branches and Tags at Once
+
+git push -u origin --all
+git push origin --tags
+
+
+## If You Get Authentication Errors:
+
+### For HTTPS (Personal Access Token Required):
+1. Go to GitHub Settings > Developer Settings > Personal Access Tokens
+2. Generate new token with 'repo' scope
+3. Use token as password when prompted
+
+### For SSH:
+1. Set up SSH key: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+2. Use SSH URL instead of HTTPS
+
+
+## Common Issues:
+
+### "Repository not found"
+- Make sure you created the repository on GitHub first
+- Check the repository name matches exactly
+- Verify you have access to the repository
+
+### "Permission denied"
+- Make sure you're logged in to the correct GitHub account
+- For HTTPS: Use personal access token as password
+- For SSH: Ensure SSH key is added to your GitHub account
+
+### "Remote origin already exists"
+- Remove old remote: git remote remove origin
+- Add new remote: git remote add origin [URL]
