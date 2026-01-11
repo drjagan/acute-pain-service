@@ -27,15 +27,12 @@
                 <form method="GET" action="<?= BASE_URL ?>/reports/individual">
                     <div class="mb-3">
                         <label for="patient_select" class="form-label">Select Patient <span class="text-danger">*</span></label>
-                        <select class="form-select" id="patient_select" name="id" required>
-                            <option value="">-- Choose a patient --</option>
-                            <?php foreach ($patients as $patient): ?>
-                            <option value="<?= $patient['id'] ?>">
-                                <?= e($patient['patient_name']) ?> (HN: <?= e($patient['hospital_number']) ?>) - 
-                                <?= e($patient['diagnosis']) ?>
-                            </option>
-                            <?php endforeach; ?>
+                        <select class="form-select patient-select2" id="patient_select" name="id" required>
+                            <option value="">-- Search or select a patient --</option>
                         </select>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-search"></i> Type to search by name or hospital number
+                        </small>
                     </div>
                     
                     <button type="submit" class="btn btn-primary w-100">
@@ -171,3 +168,4 @@ function setThisYear() {
     document.getElementById('end_date').value = lastDay.toISOString().split('T')[0];
 }
 </script>
+<!-- Patient Select2 auto-initialized via app.js -->

@@ -13,6 +13,10 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link href="<?= asset('css/main.css') ?>" rel="stylesheet">
     <link href="<?= asset('css/reports.css') ?>" rel="stylesheet">
@@ -66,10 +70,20 @@
     
     <?php include VIEWS_PATH . '/components/footer.php'; ?>
     
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
     <!-- Custom JS -->
+    <script>
+        // Make BASE_URL available to JavaScript
+        window.BASE_URL = '<?= BASE_URL ?>';
+    </script>
     <script src="<?= asset('js/app.js') ?>"></script>
     
     <!-- Mobile Menu Auto-close on Link Click -->

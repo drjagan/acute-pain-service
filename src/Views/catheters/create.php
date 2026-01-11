@@ -15,24 +15,27 @@
             <div class="row">
                 <div class="col-md-8 mb-3">
                     <label for="patient_id" class="form-label">Select Patient <span class="text-danger">*</span></label>
-                    <select class="form-select" 
+                    <select class="form-select patient-select2" 
                             id="patient_id" 
                             name="patient_id" 
                             required
-                            <?= $selectedPatient ? 'readonly' : '' ?>>
-                        <option value="">-- Select Patient --</option>
-                        <?php foreach ($patients as $patient): ?>
-                        <option value="<?= $patient['id'] ?>"
-                                <?= $selectedPatient && $selectedPatient['id'] == $patient['id'] ? 'selected' : '' ?>
-                                data-hospital="<?= e($patient['hospital_number']) ?>"
-                                data-age="<?= $patient['age'] ?>"
-                                data-gender="<?= e($patient['gender']) ?>">
-                            <?= e($patient['patient_name']) ?> (HN: <?= e($patient['hospital_number']) ?>) - 
-                            <?= $patient['age'] ?>y/<?= ucfirst($patient['gender']) ?>
+                            <?= $selectedPatient ? 'disabled' : '' ?>>
+                        <?php if ($selectedPatient): ?>
+                        <option value="<?= $selectedPatient['id'] ?>" selected>
+                            <?= e($selectedPatient['patient_name']) ?> (HN: <?= e($selectedPatient['hospital_number']) ?>) - 
+                            <?= $selectedPatient['age'] ?>y/<?= ucfirst($selectedPatient['gender']) ?>
                         </option>
-                        <?php endforeach; ?>
+                        <?php else: ?>
+                        <option value="">-- Search or select a patient --</option>
+                        <?php endif; ?>
                     </select>
+                    <?php if ($selectedPatient): ?>
+                    <input type="hidden" name="patient_id" value="<?= $selectedPatient['id'] ?>">
+                    <?php endif; ?>
                     <div class="invalid-feedback">Please select a patient</div>
+                    <small class="form-text text-muted">
+                        <i class="bi bi-search"></i> Type to search by name or hospital number
+                    </small>
                 </div>
                 
                 <div class="col-md-4 mb-3">
@@ -302,12 +305,25 @@ document.addEventListener('DOMContentLoaded', function() {
         form.classList.add('was-validated');
     }, false);
 })();
+
+// Patient Select2 auto-initialized via app.js
+// Add custom event handler for patient info display
+$(document).ready(function() {
+    $('#patient_id').on('select2:select', function (e) {
+        var data = e.params.data;
+        if (data.hospital_number) {
+            document.getElementById('patient-details').innerHTML = 
+                'HN: ' + data.hospital_number + ' | ' + 
+                data.age + 'y/' + data.gender;
+            document.getElementById('patient-info').style.display = 'block';
+        }
+    });
+});
 </script>
 
 <style>
-/* Make readonly select look disabled but keep value */
-select[readonly] {
+/* Make disabled select look readonly but keep value */
+select[disabled].select2-container {
     pointer-events: none;
-    background-color: #e9ecef;
 }
 </style>

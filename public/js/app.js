@@ -294,3 +294,73 @@
     init();
     
 })();
+
+/**
+ * Global Patient Select2 Initialization
+ * Initialize searchable patient dropdowns with AJAX
+ */
+function initPatientSelect2(selector, options = {}) {
+    if (typeof jQuery === 'undefined' || typeof $.fn.select2 === 'undefined') {
+        console.error('jQuery or Select2 not loaded');
+        return;
+    }
+    
+    const defaults = {
+        theme: 'bootstrap-5',
+        placeholder: 'Search by name or hospital number',
+        allowClear: true,
+        minimumInputLength: 0,
+        ajax: {
+            url: window.BASE_URL + '/patients/searchAjax',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                    page: params.page || 1
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            },
+            cache: true
+        },
+        templateResult: function(patient) {
+            if (patient.loading) {
+                return patient.text;
+            }
+            
+            if (!patient.hospital_number) {
+                return patient.text;
+            }
+            
+            return $('<div>' + 
+                '<strong>' + patient.text.split(' (HN:')[0] + '</strong><br>' +
+                '<small class="text-muted">HN: ' + patient.hospital_number + ' | ' + 
+                patient.age + 'y/' + patient.gender + '</small>' +
+                '</div>');
+        },
+        templateSelection: function(patient) {
+            return patient.text || 'Search...';
+        }
+    };
+    
+    const settings = $.extend(true, {}, defaults, options);
+    
+    $(selector).select2(settings);
+}
+
+// Auto-initialize all patient select2 fields on page load
+$(document).ready(function() {
+    if ($('.patient-select2').length > 0 && !$('.patient-select2').hasClass('select2-hidden-accessible')) {
+        $('.patient-select2:not([disabled])').each(function() {
+            initPatientSelect2(this);
+        });
+    }
+});

@@ -360,4 +360,95 @@ class PatientController extends BaseController {
         ]);
         exit;
     }
+    
+    /**
+     * AJAX endpoint for Select2 patient search
+     * Returns latest 5 patients by default, or filtered results based on search term
+     */
+    public function searchAjax() {
+        $this->requireAuth();
+        
+        header('Content-Type: application/json');
+        
+        $searchTerm = $_GET['q'] ?? '';
+        $page = (int)($_GET['page'] ?? 1);
+        $limit = 10; // Results per page
+        $offset = ($page - 1) * $limit;
+        
+        try {
+            if (empty($searchTerm)) {
+                // Return latest 5 patients (most recently created)
+                $stmt = $this->db->prepare("
+                    SELECT id, patient_name, hospital_number, age, gender, diagnosis
+                    FROM patients
+                    WHERE deleted_at IS NULL
+                    ORDER BY created_at DESC
+                    LIMIT 5
+                ");
+                $stmt->execute();
+            } else {
+                // Search by name or hospital number
+                $searchParam = '%' . $searchTerm . '%';
+                $stmt = $this->db->prepare("
+                    SELECT id, patient_name, hospital_number, age, gender, diagnosis
+                    FROM patients
+                    WHERE deleted_at IS NULL
+                    AND (patient_name LIKE ? OR hospital_number LIKE ?)
+                    ORDER BY patient_name ASC
+                    LIMIT ? OFFSET ?
+                ");
+                $stmt->bindValue(1, $searchParam, \PDO::PARAM_STR);
+                $stmt->bindValue(2, $searchParam, \PDO::PARAM_STR);
+                $stmt->bindValue(3, $limit, \PDO::PARAM_INT);
+                $stmt->bindValue(4, $offset, \PDO::PARAM_INT);
+                $stmt->execute();
+            }
+            
+            $patients = $stmt->fetchAll();
+            
+            // Format results for Select2
+            $results = [];
+            foreach ($patients as $patient) {
+                $results[] = [
+                    'id' => $patient['id'],
+                    'text' => $patient['patient_name'] . ' (HN: ' . $patient['hospital_number'] . ') - ' . 
+                             $patient['age'] . 'y/' . ucfirst($patient['gender']),
+                    'hospital_number' => $patient['hospital_number'],
+                    'age' => $patient['age'],
+                    'gender' => $patient['gender'],
+                    'diagnosis' => $patient['diagnosis'] ?? ''
+                ];
+            }
+            
+            // Check if more results exist for pagination
+            $hasMore = false;
+            if (!empty($searchTerm)) {
+                $countStmt = $this->db->prepare("
+                    SELECT COUNT(*) as total
+                    FROM patients
+                    WHERE deleted_at IS NULL
+                    AND (patient_name LIKE ? OR hospital_number LIKE ?)
+                ");
+                $countStmt->execute([$searchParam, $searchParam]);
+                $totalResults = $countStmt->fetch()['total'];
+                $hasMore = ($offset + $limit) < $totalResults;
+            }
+            
+            echo json_encode([
+                'results' => $results,
+                'pagination' => [
+                    'more' => $hasMore
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'error' => 'Failed to search patients',
+                'message' => $e->getMessage()
+            ]);
+        }
+        
+        exit;
+    }
 }
