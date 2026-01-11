@@ -467,3 +467,274 @@ jQuery(document).ready(function($) {
         console.log('APS Patient Select2: No .patient-select2 elements found on this page');
     }
 });
+
+/**
+ * NOTIFICATIONS SYSTEM (v1.1)
+ * Real-time notification bell with auto-refresh and mark-as-read
+ */
+
+window.APS = window.APS || {};
+
+window.APS.Notifications = (function() {
+    'use strict';
+    
+    let unreadCount = 0;
+    let autoReadTimers = {};
+    let refreshInterval = null;
+    
+    /**
+     * Initialize notification system
+     */
+    function init() {
+        console.log('APS Notifications: Initializing...');
+        
+        // Load initial notifications
+        loadNotifications();
+        
+        // Auto-refresh every 30 seconds
+        refreshInterval = setInterval(loadNotifications, 30000);
+        
+        // Mark all as read button
+        const markAllBtn = document.getElementById('markAllReadBtn');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', markAllAsRead);
+        }
+        
+        // Dropdown shown event
+        const dropdown = document.getElementById('notificationDropdown');
+        if (dropdown) {
+            dropdown.addEventListener('shown.bs.dropdown', function() {
+                loadNotifications(); // Refresh when opened
+            });
+        }
+        
+        console.log('APS Notifications: Initialized');
+    }
+    
+    /**
+     * Load notifications from server
+     */
+    function loadNotifications() {
+        fetch(window.BASE_URL + '/notifications/getUnread')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateBadge(data.unread_count);
+                    renderNotifications(data.notifications);
+                } else {
+                    console.error('APS Notifications: Failed to load', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('APS Notifications: Network error', error);
+            });
+    }
+    
+    /**
+     * Update notification badge
+     */
+    function updateBadge(count) {
+        unreadCount = count;
+        const badge = document.getElementById('notificationBadge');
+        
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+    
+    /**
+     * Render notifications in dropdown
+     */
+    function renderNotifications(notifications) {
+        const listEl = document.getElementById('notificationList');
+        
+        if (!listEl) return;
+        
+        // Clear existing
+        listEl.innerHTML = '';
+        
+        if (notifications.length === 0) {
+            listEl.innerHTML = `
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-bell-slash fs-2 d-block mb-2"></i>
+                    <small>No notifications</small>
+                </div>
+            `;
+            return;
+        }
+        
+        notifications.forEach(notification => {
+            const item = createNotificationItem(notification);
+            listEl.appendChild(item);
+            
+            // Auto-mark as read after 10 seconds if auto_dismiss is true
+            if (notification.auto_dismiss && notification.is_read == 0) {
+                autoReadTimers[notification.id] = setTimeout(() => {
+                    markAsRead(notification.id, item);
+                }, 10000);
+            }
+        });
+    }
+    
+    /**
+     * Create notification HTML element
+     */
+    function createNotificationItem(notification) {
+        const div = document.createElement('div');
+        div.className = 'notification-item d-flex gap-2 align-items-start';
+        div.dataset.notificationId = notification.id;
+        
+        if (notification.is_read == 0) {
+            div.classList.add('unread');
+        }
+        
+        // Icon
+        const iconClass = notification.icon || 'bi-bell';
+        const colorClass = 'bg-' + notification.color;
+        
+        // Time ago
+        const timeAgo = formatTimeAgo(notification.created_at);
+        
+        div.innerHTML = `
+            <div class="notification-icon ${colorClass}">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="notification-content flex-grow-1">
+                <div class="notification-title">${escapeHtml(notification.title)}</div>
+                <div class="notification-message">${escapeHtml(notification.message)}</div>
+                <div class="d-flex justify-content-between align-items-center mt-1">
+                    <span class="notification-time">${timeAgo}</span>
+                    ${notification.action_url ? 
+                        `<a href="${window.BASE_URL}${notification.action_url}" class="btn btn-sm btn-outline-primary">
+                            ${escapeHtml(notification.action_text || 'View')}
+                        </a>` : 
+                        ''}
+                </div>
+            </div>
+        `;
+        
+        // Click to mark as read
+        if (notification.is_read == 0) {
+            div.addEventListener('click', function(e) {
+                // Don't mark as read if clicking action button
+                if (!e.target.classList.contains('btn')) {
+                    markAsRead(notification.id, div);
+                }
+            });
+        }
+        
+        return div;
+    }
+    
+    /**
+     * Mark notification as read
+     */
+    function markAsRead(notificationId, itemElement) {
+        // Clear auto-read timer
+        if (autoReadTimers[notificationId]) {
+            clearTimeout(autoReadTimers[notificationId]);
+            delete autoReadTimers[notificationId];
+        }
+        
+        fetch(window.BASE_URL + '/notifications/markAsRead/' + notificationId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (itemElement) {
+                    itemElement.classList.remove('unread');
+                }
+                updateBadge(data.unread_count);
+            }
+        })
+        .catch(error => {
+            console.error('APS Notifications: Mark as read error', error);
+        });
+    }
+    
+    /**
+     * Mark all as read
+     */
+    function markAllAsRead() {
+        fetch(window.BASE_URL + '/notifications/markAllAsRead', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateBadge(0);
+                loadNotifications(); // Refresh list
+            }
+        })
+        .catch(error => {
+            console.error('APS Notifications: Mark all as read error', error);
+        });
+    }
+    
+    /**
+     * Format time ago
+     */
+    function formatTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+        if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+        if (seconds < 604800) return Math.floor(seconds / 86400) + 'd ago';
+        
+        return date.toLocaleDateString();
+    }
+    
+    /**
+     * Escape HTML
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    /**
+     * Cleanup on page unload
+     */
+    function cleanup() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+        
+        Object.values(autoReadTimers).forEach(timer => clearTimeout(timer));
+    }
+    
+    // Public API
+    return {
+        init: init,
+        loadNotifications: loadNotifications,
+        markAsRead: markAsRead,
+        markAllAsRead: markAllAsRead,
+        cleanup: cleanup
+    };
+})();
+
+// Auto-initialize notifications
+document.addEventListener('DOMContentLoaded', function() {
+    window.APS.Notifications.init();
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', function() {
+    window.APS.Notifications.cleanup();
+});

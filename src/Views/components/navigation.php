@@ -6,6 +6,15 @@
             </a>
         </li>
         
+        <!-- My Patients - For Physicians Only -->
+        <?php if (hasAnyRole(['attending', 'resident'])): ?>
+        <li class="nav-item">
+            <a class="nav-link <?= isRoute('mypatients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients/myPatients">
+                <i class="bi bi-person-heart"></i> My Patients
+            </a>
+        </li>
+        <?php endif; ?>
+        
         <!-- Phase 2: Active Items -->
         <?php if (hasAnyRole(['attending', 'resident', 'nurse', 'admin'])): ?>
         <li class="nav-item">
@@ -53,6 +62,11 @@
         <li class="nav-item">
             <a class="nav-link <?= isRoute('reports') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reports">
                 <i class="bi bi-file-earmark-spreadsheet"></i> Reports
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= isRoute('settings') ? 'active' : '' ?>" href="<?= BASE_URL ?>/settings">
+                <i class="bi bi-gear-fill"></i> Settings
             </a>
         </li>
         <?php endif; ?>

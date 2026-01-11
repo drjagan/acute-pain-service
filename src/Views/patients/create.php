@@ -212,6 +212,65 @@
         </div>
     </div>
     
+    <!-- Section 6: Assign Physicians (v1.1) -->
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-people"></i> Assign Physicians (Optional)</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="attending_physicians" class="form-label">
+                        <i class="bi bi-person-badge"></i> Attending Physicians
+                    </label>
+                    <select class="form-select" 
+                            id="attending_physicians" 
+                            name="attending_physicians[]" 
+                            multiple="multiple"
+                            style="width: 100%">
+                        <?php if (isset($attendings) && !empty($attendings)): ?>
+                            <?php foreach ($attendings as $attending): ?>
+                                <option value="<?= $attending['id'] ?>">
+                                    <?= e($attending['display_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <small class="form-text text-muted">
+                        Select one or more attending physicians. First selected will be primary.
+                    </small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="residents" class="form-label">
+                        <i class="bi bi-person"></i> Residents
+                    </label>
+                    <select class="form-select" 
+                            id="residents" 
+                            name="residents[]" 
+                            multiple="multiple"
+                            style="width: 100%">
+                        <?php if (isset($residents) && !empty($residents)): ?>
+                            <?php foreach ($residents as $resident): ?>
+                                <option value="<?= $resident['id'] ?>">
+                                    <?= e($resident['display_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <small class="form-text text-muted">
+                        Select one or more residents. First selected will be primary.
+                    </small>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i>
+                <strong>Note:</strong> Assigned physicians will receive notifications when this patient's status changes.
+            </div>
+        </div>
+    </div>
+    
     <!-- Form Actions -->
     <div class="d-flex justify-content-between">
         <a href="<?= BASE_URL ?>/patients" class="btn btn-secondary">
@@ -315,4 +374,21 @@ document.addEventListener('DOMContentLoaded', function() {
         form.classList.add('was-validated');
     }, false);
 })();
+
+// Initialize Select2 for physician dropdowns (v1.1)
+jQuery(document).ready(function($) {
+    $('#attending_physicians').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select attending physicians',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    $('#residents').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select residents',
+        allowClear: true,
+        width: '100%'
+    });
+});
 </script>

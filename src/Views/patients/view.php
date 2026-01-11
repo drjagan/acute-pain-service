@@ -140,6 +140,95 @@
     </div>
 </div>
 
+<!-- SECTION 1.5: Assigned Physicians (v1.1) -->
+<?php
+$patientWithPhysicians = (new Models\Patient())->getPatientWithPhysicians($patient['id']);
+$attendingPhysicians = $patientWithPhysicians['attending_physicians'] ?? [];
+$residents = $patientWithPhysicians['residents'] ?? [];
+?>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-people"></i> Assigned Physicians</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Attending Physicians -->
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-person-badge"></i> Attending Physicians
+                        </h6>
+                        <?php if (empty($attendingPhysicians)): ?>
+                            <p class="text-muted"><em>No attending physicians assigned</em></p>
+                        <?php else: ?>
+                            <?php foreach ($attendingPhysicians as $physician): ?>
+                                <div class="d-flex align-items-center gap-2 mb-2 p-2 border rounded">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">
+                                            <?= e($physician['physician_name']) ?>
+                                            <?php if ($physician['is_primary']): ?>
+                                                <span class="badge bg-primary ms-1" title="Primary Attending">
+                                                    <i class="bi bi-star-fill"></i> Primary
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-envelope"></i> <?= e($physician['email']) ?>
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-<?= $physician['status'] == 'active' ? 'success' : 'secondary' ?>">
+                                        <?= ucfirst($physician['status']) ?>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Residents -->
+                    <div class="col-md-6">
+                        <h6 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-person"></i> Residents
+                        </h6>
+                        <?php if (empty($residents)): ?>
+                            <p class="text-muted"><em>No residents assigned</em></p>
+                        <?php else: ?>
+                            <?php foreach ($residents as $physician): ?>
+                                <div class="d-flex align-items-center gap-2 mb-2 p-2 border rounded">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">
+                                            <?= e($physician['physician_name']) ?>
+                                            <?php if ($physician['is_primary']): ?>
+                                                <span class="badge bg-primary ms-1" title="Primary Resident">
+                                                    <i class="bi bi-star-fill"></i> Primary
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-envelope"></i> <?= e($physician['email']) ?>
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-<?= $physician['status'] == 'active' ? 'success' : 'secondary' ?>">
+                                        <?= ucfirst($physician['status']) ?>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <?php if (hasAnyRole(['attending', 'admin'])): ?>
+                    <div class="text-end mt-3">
+                        <a href="<?= BASE_URL ?>/patients/edit/<?= $patient['id'] ?>" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Edit Physicians
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- SECTION 2: Status & Timeline -->
 <div class="row mb-3">
     <div class="col-12">

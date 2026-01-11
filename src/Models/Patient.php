@@ -172,4 +172,75 @@ class Patient extends BaseModel {
         $stmt->execute([$patientId]);
         return $stmt->fetch();
     }
+    
+    /**
+     * Get patient with associated physicians
+     */
+    public function getPatientWithPhysicians($patientId) {
+        // Get patient data
+        $patient = $this->find($patientId);
+        
+        if (!$patient) {
+            return false;
+        }
+        
+        // Get associated physicians using PatientPhysician model
+        require_once __DIR__ . '/PatientPhysician.php';
+        $patientPhysicianModel = new PatientPhysician();
+        $physicians = $patientPhysicianModel->getPhysiciansByPatient($patientId);
+        
+        // Organize physicians by type
+        $patient['attending_physicians'] = [];
+        $patient['residents'] = [];
+        
+        foreach ($physicians as $physician) {
+            if ($physician['physician_type'] == 'attending') {
+                $patient['attending_physicians'][] = $physician;
+            } else {
+                $patient['residents'][] = $physician;
+            }
+        }
+        
+        return $patient;
+    }
+    
+    /**
+     * Get patients assigned to a specific physician
+     */
+    public function getPatientsByPhysician($userId, $limit = null) {
+        require_once __DIR__ . '/PatientPhysician.php';
+        $patientPhysicianModel = new PatientPhysician();
+        
+        return $patientPhysicianModel->getPatientsByPhysician($userId, $limit);
+    }
+    
+    /**
+     * Sync physicians for a patient
+     */
+    public function syncPhysicians($patientId, $attendingIds = [], $residentIds = [], $userId = null) {
+        require_once __DIR__ . '/PatientPhysician.php';
+        $patientPhysicianModel = new PatientPhysician();
+        
+        return $patientPhysicianModel->syncPhysicians($patientId, $attendingIds, $residentIds, $userId);
+    }
+    
+    /**
+     * Get primary attending physician for a patient
+     */
+    public function getPrimaryAttending($patientId) {
+        require_once __DIR__ . '/PatientPhysician.php';
+        $patientPhysicianModel = new PatientPhysician();
+        
+        return $patientPhysicianModel->getPrimaryPhysician($patientId, 'attending');
+    }
+    
+    /**
+     * Get primary resident for a patient
+     */
+    public function getPrimaryResident($patientId) {
+        require_once __DIR__ . '/PatientPhysician.php';
+        $patientPhysicianModel = new PatientPhysician();
+        
+        return $patientPhysicianModel->getPrimaryPhysician($patientId, 'resident');
+    }
 }

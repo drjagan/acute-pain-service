@@ -13,6 +13,39 @@
     
     <!-- User Info & Actions (Right Side) -->
     <div class="navbar-nav flex-row ms-auto">
+        <!-- Notification Bell (v1.1) -->
+        <div class="nav-item dropdown">
+            <a class="nav-link px-3 position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <i class="bi bi-bell fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none; font-size: 0.65rem;">
+                    0
+                </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown" style="width: 380px; max-width: 95vw;">
+                <!-- Notification Header -->
+                <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 bg-light border-bottom">
+                    <strong>Notifications</strong>
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" id="markAllReadBtn" style="font-size: 0.8rem;">
+                        Mark all as read
+                    </button>
+                </div>
+                
+                <!-- Notification List -->
+                <div id="notificationList" class="notification-list" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-bell-slash fs-2 d-block mb-2"></i>
+                        <small>No notifications</small>
+                    </div>
+                </div>
+                
+                <!-- View All Link -->
+                <div class="dropdown-divider m-0"></div>
+                <a class="dropdown-item text-center small py-2 text-primary" href="<?= BASE_URL ?>/notifications">
+                    <i class="bi bi-arrow-right-circle me-1"></i> View all notifications
+                </a>
+            </div>
+        </div>
+        
         <!-- User Info (Desktop Only) -->
         <div class="nav-item text-nowrap d-none d-lg-flex align-items-center px-3 border-end border-light border-opacity-25">
             <i class="bi bi-person-circle me-2"></i>

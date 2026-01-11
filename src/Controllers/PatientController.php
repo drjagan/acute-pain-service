@@ -46,6 +46,50 @@ class PatientController extends BaseController {
     }
     
     /**
+     * My Patients - Show patients assigned to logged-in physician (v1.1)
+     */
+    public function myPatients() {
+        $this->requireRole(['attending', 'resident']);
+        
+        $user = $this->user();
+        
+        // Get all patients assigned to this physician
+        $myPatients = $this->patientModel->getPatientsByPhysician($user['id'], null); // No limit
+        
+        // Enrich with catheter status
+        foreach ($myPatients as &$patient) {
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as active_count
+                FROM catheters 
+                WHERE patient_id = ? 
+                AND status = 'active' 
+                AND deleted_at IS NULL
+            ");
+            $stmt->execute([$patient['patient_id']]);
+            $catheterData = $stmt->fetch();
+            $patient['active_catheters'] = $catheterData['active_count'];
+            
+            // Get latest catheter info if exists
+            $stmt = $this->db->prepare("
+                SELECT catheter_type, date_of_insertion, status
+                FROM catheters 
+                WHERE patient_id = ? 
+                AND deleted_at IS NULL
+                ORDER BY created_at DESC
+                LIMIT 1
+            ");
+            $stmt->execute([$patient['patient_id']]);
+            $patient['latest_catheter'] = $stmt->fetch();
+        }
+        
+        $this->view('mypatients.index', [
+            'patients' => $myPatients,
+            'user' => $user,
+            'total' => count($myPatients)
+        ]);
+    }
+    
+    /**
      * Show create patient form (Screen 1)
      */
     public function create() {
@@ -55,11 +99,14 @@ class PatientController extends BaseController {
         // Load lookup data
         $comorbidities = $this->getLookupData('lookup_comorbidities');
         $surgeries = $this->getLookupData('lookup_surgeries');
+        $physicians = $this->getPhysiciansForForm();
         
         $this->view('patients.create', [
             'comorbidities' => $comorbidities,
             'surgeries' => $surgeries,
-            'specialities' => $this->getSpecialities()
+            'specialities' => $this->getSpecialities(),
+            'attendings' => $physicians['attendings'],
+            'residents' => $physicians['residents']
         ]);
     }
     
@@ -85,6 +132,16 @@ class PatientController extends BaseController {
         
         try {
             $patientId = $this->patientModel->create($data);
+            
+            // Sync physician associations (v1.1 feature)
+            $attendingIds = $_POST['attending_physicians'] ?? [];
+            $residentIds = $_POST['residents'] ?? [];
+            if (!empty($attendingIds) || !empty($residentIds)) {
+                $this->patientModel->syncPhysicians($patientId, $attendingIds, $residentIds, $this->user()['id']);
+            }
+            
+            // Create notification for assigned physicians (v1.1 feature)
+            $this->notifyPhysiciansAboutNewPatient($patientId, $attendingIds, $residentIds, $data['patient_name']);
             
             Flash::success('Patient registered successfully');
             return $this->redirect('/patients/viewPatient/' . $patientId);
@@ -163,14 +220,22 @@ class PatientController extends BaseController {
         $patient['comorbid_illness'] = json_decode($patient['comorbid_illness'], true) ?: [];
         $patient['surgery'] = json_decode($patient['surgery'], true) ?: [];
         
+        // Get patient with physicians (v1.1)
+        $patientWithPhysicians = $this->patientModel->getPatientWithPhysicians($id);
+        $patient['attending_physicians'] = $patientWithPhysicians['attending_physicians'] ?? [];
+        $patient['residents'] = $patientWithPhysicians['residents'] ?? [];
+        
         $comorbidities = $this->getLookupData('lookup_comorbidities');
         $surgeries = $this->getLookupData('lookup_surgeries');
+        $physicians = $this->getPhysiciansForForm();
         
         $this->view('patients.edit', [
             'patient' => $patient,
             'comorbidities' => $comorbidities,
             'surgeries' => $surgeries,
-            'specialities' => $this->getSpecialities()
+            'specialities' => $this->getSpecialities(),
+            'attendings' => $physicians['attendings'],
+            'residents' => $physicians['residents']
         ]);
     }
     
@@ -200,6 +265,11 @@ class PatientController extends BaseController {
         
         try {
             $this->patientModel->update($id, $data);
+            
+            // Sync physician associations (v1.1 feature)
+            $attendingIds = $_POST['attending_physicians'] ?? [];
+            $residentIds = $_POST['residents'] ?? [];
+            $this->patientModel->syncPhysicians($id, $attendingIds, $residentIds, $this->user()['id']);
             
             Flash::success('Patient updated successfully');
             return $this->redirect('/patients/viewPatient/' . $id);
@@ -450,5 +520,73 @@ class PatientController extends BaseController {
         }
         
         exit;
+    }
+    
+    /**
+     * Get all attending physicians and residents for forms (v1.1)
+     */
+    private function getPhysiciansForForm() {
+        $stmt = $this->db->prepare("
+            SELECT id, username, first_name, last_name, role,
+                   CONCAT(first_name, ' ', last_name, ' (', username, ')') as display_name
+            FROM users
+            WHERE role IN ('attending', 'resident')
+            AND status = 'active'
+            AND deleted_at IS NULL
+            ORDER BY role ASC, last_name ASC, first_name ASC
+        ");
+        $stmt->execute();
+        $physicians = $stmt->fetchAll();
+        
+        $attendings = [];
+        $residents = [];
+        
+        foreach ($physicians as $physician) {
+            if ($physician['role'] == 'attending') {
+                $attendings[] = $physician;
+            } else {
+                $residents[] = $physician;
+            }
+        }
+        
+        return [
+            'attendings' => $attendings,
+            'residents' => $residents
+        ];
+    }
+    
+    /**
+     * Send notifications to assigned physicians about new patient (v1.1)
+     */
+    private function notifyPhysiciansAboutNewPatient($patientId, $attendingIds, $residentIds, $patientName) {
+        require_once __DIR__ . '/../Models/Notification.php';
+        $notificationModel = new \Models\Notification();
+        
+        $allPhysicianIds = array_merge($attendingIds, $residentIds);
+        
+        if (empty($allPhysicianIds)) {
+            return;
+        }
+        
+        $currentUser = $this->user();
+        $message = "A new patient '{$patientName}' has been registered and assigned to you by {$currentUser['first_name']} {$currentUser['last_name']}.";
+        
+        $notificationModel->notifyMultiple(
+            $allPhysicianIds,
+            'patient_created',
+            'New Patient Assigned',
+            $message,
+            [
+                'priority' => 'medium',
+                'color' => 'success',
+                'icon' => 'fa-user-plus',
+                'related_type' => 'patients',
+                'related_id' => $patientId,
+                'action_url' => '/patients/viewPatient/' . $patientId,
+                'action_text' => 'View Patient',
+                'send_email' => true,
+                'created_by' => $currentUser['id']
+            ]
+        );
     }
 }

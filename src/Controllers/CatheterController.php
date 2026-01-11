@@ -112,6 +112,9 @@ class CatheterController extends BaseController {
                 'updated_by' => $this->user()['id']
             ]);
             
+            // Send notifications to assigned physicians (v1.1)
+            $this->notifyPhysiciansAboutCatheterInsertion($data['patient_id'], $catheterId, $data);
+            
             Flash::success('Catheter inserted successfully');
             return $this->redirect('/catheters/viewCatheter/' . $catheterId);
             
@@ -325,6 +328,9 @@ class CatheterController extends BaseController {
                 'updated_by' => $this->user()['id']
             ]);
             
+            // Send notifications to assigned physicians (v1.1)
+            $this->notifyPhysiciansAboutCatheterRemoval($catheter['patient_id'], $id, $removalId, $data);
+            
             Flash::success('Catheter removal documented successfully');
             return $this->redirect('/catheters/viewCatheter/' . $id);
             
@@ -517,5 +523,97 @@ class CatheterController extends BaseController {
         $stmt->execute($ids);
         
         return $stmt->fetchAll();
+    }
+    
+    /**
+     * Send notifications to assigned physicians about catheter insertion (v1.1)
+     */
+    private function notifyPhysiciansAboutCatheterInsertion($patientId, $catheterId, $catheterData) {
+        require_once __DIR__ . '/../Models/Notification.php';
+        require_once __DIR__ . '/../Models/PatientPhysician.php';
+        
+        $notificationModel = new \Models\Notification();
+        $patientPhysicianModel = new \Models\PatientPhysician();
+        
+        // Get patient details
+        $patient = $this->patientModel->find($patientId);
+        if (!$patient) return;
+        
+        // Get assigned physicians
+        $physicians = $patientPhysicianModel->getPhysiciansByPatient($patientId);
+        if (empty($physicians)) return;
+        
+        $physicianIds = array_column($physicians, 'user_id');
+        $currentUser = $this->user();
+        
+        $catheterType = $catheterData['catheter_type'] ?? 'catheter';
+        $message = "A {$catheterType} has been inserted for patient '{$patient['patient_name']}' by {$currentUser['first_name']} {$currentUser['last_name']}.";
+        
+        $notificationModel->notifyMultiple(
+            $physicianIds,
+            'catheter_inserted',
+            'Catheter Inserted',
+            $message,
+            [
+                'priority' => 'high',
+                'color' => 'info',
+                'icon' => 'bi-clipboard-pulse',
+                'related_type' => 'catheters',
+                'related_id' => $catheterId,
+                'action_url' => '/catheters/viewCatheter/' . $catheterId,
+                'action_text' => 'View Catheter',
+                'send_email' => true,
+                'created_by' => $currentUser['id']
+            ]
+        );
+    }
+    
+    /**
+     * Send notifications to assigned physicians about catheter removal (v1.1)
+     */
+    private function notifyPhysiciansAboutCatheterRemoval($patientId, $catheterId, $removalId, $removalData) {
+        require_once __DIR__ . '/../Models/Notification.php';
+        require_once __DIR__ . '/../Models/PatientPhysician.php';
+        
+        $notificationModel = new \Models\Notification();
+        $patientPhysicianModel = new \Models\PatientPhysician();
+        
+        // Get patient details
+        $patient = $this->patientModel->find($patientId);
+        if (!$patient) return;
+        
+        // Get assigned physicians
+        $physicians = $patientPhysicianModel->getPhysiciansByPatient($patientId);
+        if (empty($physicians)) return;
+        
+        $physicianIds = array_column($physicians, 'user_id');
+        $currentUser = $this->user();
+        
+        $indication = $removalData['indication'] ?? 'unknown reason';
+        $hasComplications = !empty($removalData['removal_complications']);
+        
+        $message = "Catheter for patient '{$patient['patient_name']}' has been removed ({$indication}) by {$currentUser['first_name']} {$currentUser['last_name']}.";
+        
+        if ($hasComplications) {
+            $message .= " NOTE: Complications reported.";
+        }
+        
+        $notificationModel->notifyMultiple(
+            $physicianIds,
+            'catheter_removed',
+            $hasComplications ? 'Catheter Removed - Complications' : 'Catheter Removed',
+            $message,
+            [
+                'priority' => $hasComplications ? 'high' : 'medium',
+                'color' => $hasComplications ? 'warning' : 'success',
+                'icon' => $hasComplications ? 'bi-exclamation-triangle' : 'bi-check-circle',
+                'related_type' => 'catheters',
+                'related_id' => $catheterId,
+                'action_url' => '/catheters/viewCatheter/' . $catheterId,
+                'action_text' => 'View Details',
+                'send_email' => $hasComplications,
+                'created_by' => $currentUser['id']
+            ]
+        );
     }
 }

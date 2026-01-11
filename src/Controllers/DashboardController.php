@@ -27,7 +27,8 @@ class DashboardController extends BaseController {
             'user' => $user,
             'stats' => $this->getDashboardStats(),
             'activity' => $this->getRecentActivity(10),
-            'alerts' => $this->getAlerts()
+            'alerts' => $this->getAlerts(),
+            'myPatients' => $this->getMyPatients($user) // v1.1
         ];
         
         $this->view('dashboard.index', $data);
@@ -303,5 +304,37 @@ class DashboardController extends BaseController {
         }
         
         return $alerts;
+    }
+    
+    /**
+     * Get "My Patients" for attending physicians and residents (v1.1)
+     */
+    private function getMyPatients($user) {
+        // Only show for attending and resident roles
+        if (!in_array($user['role'], ['attending', 'resident'])) {
+            return [];
+        }
+        
+        require_once __DIR__ . '/../Models/Patient.php';
+        $patientModel = new Patient();
+        
+        // Get last 5 patients assigned to this physician
+        $patients = $patientModel->getPatientsByPhysician($user['id'], 5);
+        
+        // Enrich with catheter status
+        foreach ($patients as &$patient) {
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as active_count
+                FROM catheters 
+                WHERE patient_id = ? 
+                AND status = 'active' 
+                AND deleted_at IS NULL
+            ");
+            $stmt->execute([$patient['patient_id']]);
+            $catheterData = $stmt->fetch();
+            $patient['active_catheters'] = $catheterData['active_count'];
+        }
+        
+        return $patients;
     }
 }

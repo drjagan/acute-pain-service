@@ -3,6 +3,80 @@
     <p class="text-muted">Welcome back, <?= e($user['first_name'] . ' ' . $user['last_name']) ?> (<?= ucfirst(e($user['role'])) ?>)</p>
 </div>
 
+<!-- My Patients Widget (v1.1 - For Attending/Resident) -->
+<?php if (in_array($user['role'], ['attending', 'resident']) && !empty($myPatients)): ?>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-person-heart"></i> My Patients</h5>
+                    <span class="badge bg-light text-success"><?= count($myPatients) ?> Assigned</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Hospital #</th>
+                                <th>Age/Gender</th>
+                                <th>Specialty</th>
+                                <th>Active Catheters</th>
+                                <th>Assigned</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($myPatients as $patient): ?>
+                            <tr>
+                                <td>
+                                    <strong><?= e($patient['patient_name']) ?></strong>
+                                </td>
+                                <td><?= e($patient['hospital_number']) ?></td>
+                                <td><?= $patient['age'] ?>y / <?= ucfirst($patient['gender']) ?></td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        <?= e(ucwords(str_replace('_', ' ', $patient['speciality']))) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php if ($patient['active_catheters'] > 0): ?>
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> <?= $patient['active_catheters'] ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">None</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <?= date('M j', strtotime($patient['assigned_at'])) ?>
+                                    </small>
+                                </td>
+                                <td>
+                                    <a href="<?= BASE_URL ?>/patients/viewPatient/<?= $patient['patient_id'] ?>" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-2">
+                    <small class="text-muted">
+                        Showing last <?= count($myPatients) ?> assigned patients
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Quick Stats Row 1: Patient Metrics -->
 <div class="row mb-3">
     <div class="col-lg-3 col-md-6 mb-3">
