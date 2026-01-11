@@ -47,9 +47,10 @@ class PatientController extends BaseController {
     
     /**
      * My Patients - Show patients assigned to logged-in physician (v1.1)
+     * Note: Admins are also attending physicians with extra privileges
      */
     public function myPatients() {
-        $this->requireRole(['attending', 'resident']);
+        $this->requireRole(['attending', 'resident', 'admin']);
         
         $user = $this->user();
         
@@ -524,13 +525,14 @@ class PatientController extends BaseController {
     
     /**
      * Get all attending physicians and residents for forms (v1.1)
+     * Note: Admins are also attending physicians with extra privileges
      */
     private function getPhysiciansForForm() {
         $stmt = $this->db->prepare("
             SELECT id, username, first_name, last_name, role,
                    CONCAT(first_name, ' ', last_name, ' (', username, ')') as display_name
             FROM users
-            WHERE role IN ('attending', 'resident')
+            WHERE role IN ('attending', 'resident', 'admin')
             AND status = 'active'
             AND deleted_at IS NULL
             ORDER BY role ASC, last_name ASC, first_name ASC
@@ -542,7 +544,8 @@ class PatientController extends BaseController {
         $residents = [];
         
         foreach ($physicians as $physician) {
-            if ($physician['role'] == 'attending') {
+            // Admins are treated as attending physicians
+            if ($physician['role'] == 'attending' || $physician['role'] == 'admin') {
                 $attendings[] = $physician;
             } else {
                 $residents[] = $physician;
@@ -557,6 +560,7 @@ class PatientController extends BaseController {
     
     /**
      * Send notifications to assigned physicians about new patient (v1.1)
+     * Note: Admins can also receive notifications as they are attending physicians
      */
     private function notifyPhysiciansAboutNewPatient($patientId, $attendingIds, $residentIds, $patientName) {
         require_once __DIR__ . '/../Models/Notification.php';

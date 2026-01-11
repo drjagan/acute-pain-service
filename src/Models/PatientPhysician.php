@@ -5,7 +5,8 @@ use PDO;
 
 /**
  * PatientPhysician Model
- * Manages many-to-many relationships between patients and physicians (attending/resident)
+ * Manages many-to-many relationships between patients and physicians
+ * Note: Admins are also attending physicians with extra privileges
  */
 class PatientPhysician extends BaseModel {
     

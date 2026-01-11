@@ -257,7 +257,7 @@
                         <?php endif; ?>
                     </select>
                     <small class="form-text text-muted">
-                        Select one or more attending physicians. First selected will be primary.
+                        Select attending physicians or admins (admins have attending privileges). First selected will be primary.
                     </small>
                 </div>
                 

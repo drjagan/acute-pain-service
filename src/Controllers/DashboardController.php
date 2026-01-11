@@ -307,11 +307,12 @@ class DashboardController extends BaseController {
     }
     
     /**
-     * Get "My Patients" for attending physicians and residents (v1.1)
+     * Get "My Patients" for attending physicians, residents, and admins (v1.1)
+     * Note: All admins are also attending physicians with extra privileges
      */
     private function getMyPatients($user) {
-        // Only show for attending and resident roles
-        if (!in_array($user['role'], ['attending', 'resident'])) {
+        // Only show for attending, resident, and admin roles
+        if (!in_array($user['role'], ['attending', 'resident', 'admin'])) {
             return [];
         }
         

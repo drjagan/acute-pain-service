@@ -6,8 +6,8 @@
             </a>
         </li>
         
-        <!-- My Patients - For Physicians Only -->
-        <?php if (hasAnyRole(['attending', 'resident'])): ?>
+        <!-- My Patients - For Physicians (Attending, Residents, and Admins who are also Attending) -->
+        <?php if (hasAnyRole(['attending', 'resident', 'admin'])): ?>
         <li class="nav-item">
             <a class="nav-link <?= isRoute('mypatients') ? 'active' : '' ?>" href="<?= BASE_URL ?>/patients/myPatients">
                 <i class="bi bi-person-heart"></i> My Patients

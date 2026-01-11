@@ -3,8 +3,8 @@
     <p class="text-muted">Welcome back, <?= e($user['first_name'] . ' ' . $user['last_name']) ?> (<?= ucfirst(e($user['role'])) ?>)</p>
 </div>
 
-<!-- My Patients Widget (v1.1 - For Attending/Resident) -->
-<?php if (in_array($user['role'], ['attending', 'resident']) && !empty($myPatients)): ?>
+<!-- My Patients Widget (v1.1 - For Attending/Resident/Admin) -->
+<?php if (in_array($user['role'], ['attending', 'resident', 'admin']) && !empty($myPatients)): ?>
 <div class="row mb-3">
     <div class="col-12">
         <div class="card border-success">

@@ -527,6 +527,7 @@ class CatheterController extends BaseController {
     
     /**
      * Send notifications to assigned physicians about catheter insertion (v1.1)
+     * Note: Admins assigned as attending physicians also receive notifications
      */
     private function notifyPhysiciansAboutCatheterInsertion($patientId, $catheterId, $catheterData) {
         require_once __DIR__ . '/../Models/Notification.php';
@@ -570,6 +571,7 @@ class CatheterController extends BaseController {
     
     /**
      * Send notifications to assigned physicians about catheter removal (v1.1)
+     * Note: Admins assigned as attending physicians also receive notifications
      */
     private function notifyPhysiciansAboutCatheterRemoval($patientId, $catheterId, $removalId, $removalData) {
         require_once __DIR__ . '/../Models/Notification.php';
