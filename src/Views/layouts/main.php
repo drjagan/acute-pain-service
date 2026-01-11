@@ -15,6 +15,10 @@
     
     <!-- Custom CSS -->
     <link href="<?= asset('css/main.css') ?>" rel="stylesheet">
+    <link href="<?= asset('css/reports.css') ?>" rel="stylesheet">
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <?= \Helpers\CSRF::meta() ?>
 </head>

@@ -51,8 +51,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">
-                <i class="bi bi-file-earmark-spreadsheet"></i> Reports <small>(Phase 5)</small>
+            <a class="nav-link <?= isRoute('reports') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reports">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Reports
             </a>
         </li>
         <?php endif; ?>

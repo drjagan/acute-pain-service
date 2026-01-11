@@ -85,23 +85,41 @@ class Report extends BaseModel {
     // ==================== INDIVIDUAL REPORT METHODS ====================
     
     private function getPatientDemographics($patientId) {
-        $sql = "
-            SELECT p.*,
-                   GROUP_CONCAT(DISTINCT lc.name SEPARATOR ', ') as comorbidities_list,
-                   GROUP_CONCAT(DISTINCT ls.name SEPARATOR ', ') as surgeries_list
-            FROM patients p
-            LEFT JOIN patient_comorbidities pc ON p.id = pc.patient_id
-            LEFT JOIN lookup_comorbidities lc ON pc.comorbidity_id = lc.id
-            LEFT JOIN patient_surgeries ps ON p.id = ps.patient_id
-            LEFT JOIN lookup_surgeries ls ON ps.surgery_id = ls.id
-            WHERE p.id = ? AND p.deleted_at IS NULL
-            GROUP BY p.id
-        ";
-        
+        // Get patient basic info
+        $sql = "SELECT p.* FROM patients p WHERE p.id = ? AND p.deleted_at IS NULL";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$patientId]);
+        $patient = $stmt->fetch();
         
-        return $stmt->fetch();
+        if (!$patient) {
+            return null;
+        }
+        
+        // Decode JSON comorbidities and get names
+        $comorbidityIds = json_decode($patient['comorbid_illness'] ?? '[]', true);
+        $comorbidities = [];
+        if (!empty($comorbidityIds)) {
+            $placeholders = str_repeat('?,', count($comorbidityIds) - 1) . '?';
+            $sql = "SELECT name FROM lookup_comorbidities WHERE id IN ($placeholders)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($comorbidityIds);
+            $comorbidities = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        $patient['comorbidities_list'] = implode(', ', $comorbidities);
+        
+        // Decode JSON surgeries and get names
+        $surgeryIds = json_decode($patient['surgery'] ?? '[]', true);
+        $surgeries = [];
+        if (!empty($surgeryIds)) {
+            $placeholders = str_repeat('?,', count($surgeryIds) - 1) . '?';
+            $sql = "SELECT name FROM lookup_surgeries WHERE id IN ($placeholders)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($surgeryIds);
+            $surgeries = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        $patient['surgeries_list'] = implode(', ', $surgeries);
+        
+        return $patient;
     }
     
     private function getPatientCatheters($patientId) {
