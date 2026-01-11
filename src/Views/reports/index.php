@@ -169,27 +169,35 @@ function setThisYear() {
 }
 </script>
 
-<!-- Patient Select2 Debugging & Manual Init (fallback) -->
+<!-- Patient Select2 Initialization (Deferred until jQuery loads) -->
 <script>
-jQuery(document).ready(function($) {
-    console.log('=== REPORTS PAGE: Select2 Debug ===');
-    console.log('jQuery loaded:', typeof jQuery !== 'undefined');
-    console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
-    console.log('BASE_URL:', window.BASE_URL);
-    console.log('APS namespace:', typeof window.APS !== 'undefined');
-    console.log('Patient select elements:', $('.patient-select2').length);
+// Wait for window load to ensure all libraries are available
+(function waitForLibraries() {
+    if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined' || !window.APS) {
+        // Libraries not ready yet, try again in 50ms
+        setTimeout(waitForLibraries, 50);
+        return;
+    }
     
-    // If auto-init didn't work, try manual init after 500ms
-    setTimeout(function() {
-        const $patientSelect = $('#patient_select');
-        if (!$patientSelect.hasClass('select2-hidden-accessible')) {
-            console.log('Auto-init failed, manually initializing...');
-            if (window.APS && window.APS.initPatientSelect2) {
+    // Libraries are ready, initialize
+    jQuery(document).ready(function($) {
+        console.log('=== REPORTS PAGE: Select2 Debug ===');
+        console.log('jQuery loaded:', typeof jQuery !== 'undefined');
+        console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
+        console.log('BASE_URL:', window.BASE_URL);
+        console.log('APS namespace:', typeof window.APS);
+        console.log('Patient select elements:', $('.patient-select2').length);
+        
+        // If auto-init didn't work, try manual init after 500ms
+        setTimeout(function() {
+            const $patientSelect = $('#patient_select');
+            if (!$patientSelect.hasClass('select2-hidden-accessible')) {
+                console.log('Auto-init failed, manually initializing...');
                 window.APS.initPatientSelect2('#patient_select');
+            } else {
+                console.log('Select2 already initialized successfully');
             }
-        } else {
-            console.log('Select2 already initialized successfully');
-        }
-    }, 500);
-});
+        }, 500);
+    });
+})();
 </script>

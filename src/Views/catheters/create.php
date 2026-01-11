@@ -305,24 +305,32 @@ document.addEventListener('DOMContentLoaded', function() {
         form.classList.add('was-validated');
     }, false);
 })();
+</script>
 
-// Patient Select2 - Manual initialization with event handlers
-jQuery(document).ready(function($) {
-    <?php if (!$selectedPatient): ?>
-    console.log('=== CATHETER CREATE: Select2 Debug ===');
-    console.log('jQuery loaded:', typeof jQuery !== 'undefined');
-    console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
-    console.log('BASE_URL:', window.BASE_URL);
+<!-- Patient Select2 Initialization (Deferred until jQuery loads) -->
+<script>
+<?php if (!$selectedPatient): ?>
+// Wait for window load to ensure all libraries are available
+(function waitForLibraries() {
+    if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined' || !window.APS) {
+        // Libraries not ready yet, try again in 50ms
+        setTimeout(waitForLibraries, 50);
+        return;
+    }
     
-    // Wait for APS namespace to be available
-    setTimeout(function() {
+    // Libraries are ready, initialize
+    jQuery(document).ready(function($) {
+        console.log('=== CATHETER CREATE: Select2 Debug ===');
+        console.log('jQuery loaded:', typeof jQuery !== 'undefined');
+        console.log('Select2 loaded:', typeof $.fn.select2 !== 'undefined');
+        console.log('BASE_URL:', window.BASE_URL);
+        console.log('APS namespace:', typeof window.APS);
+        
         const $patientSelect = $('#patient_id');
         
         if (!$patientSelect.hasClass('select2-hidden-accessible')) {
             console.log('Manually initializing patient select...');
-            if (window.APS && window.APS.initPatientSelect2) {
-                window.APS.initPatientSelect2('#patient_id');
-            }
+            window.APS.initPatientSelect2('#patient_id');
         }
         
         // Add custom event handler for patient info display
@@ -336,9 +344,9 @@ jQuery(document).ready(function($) {
                 document.getElementById('patient-info').style.display = 'block';
             }
         });
-    }, 500);
-    <?php endif; ?>
-});
+    });
+})();
+<?php endif; ?>
 </script>
 
 <style>
