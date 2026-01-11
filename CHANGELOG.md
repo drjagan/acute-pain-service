@@ -5,6 +5,46 @@ All notable changes to the Acute Pain Service Management System will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-01-11
+
+### 🔑 Role Enhancement - Admins as Attending Physicians
+
+#### Changed
+- **Admin Role Privileges**: All admins now have full attending physician capabilities in addition to their administrative privileges
+  - Admins can be assigned to patients as attending physicians
+  - Admins appear in the "Attending Physicians" dropdown when creating/editing patients
+  - Admins can access the "My Patients" page and dashboard widget
+  - Admins receive notifications for their assigned patients (new patient, catheter events)
+
+#### What This Means
+- **For Admins**: You now have dual roles - full system administration PLUS attending physician capabilities
+- **For Workflow**: Admins can actively participate in patient care while managing the system
+- **Role Hierarchy**: All admins are attending physicians, but only some attending physicians are admins
+
+#### Files Modified (8)
+1. `src/Views/components/navigation.php` - Added admin to "My Patients" link visibility
+2. `src/Controllers/DashboardController.php` - Enabled "My Patients" widget for admins
+3. `src/Controllers/PatientController.php` - Added admin access to myPatients() route and physician selection
+4. `src/Controllers/CatheterController.php` - Updated notification comments
+5. `src/Models/PatientPhysician.php` - Updated model documentation
+6. `src/Views/dashboard/index.php` - Added admin to widget visibility
+7. `src/Views/patients/create.php` - Updated help text for physician selection
+8. `src/Views/patients/edit.php` - Updated help text for physician selection
+
+#### Technical Details
+- **No Database Changes**: Existing structure already supports this (user_id based, not role based)
+- **Backward Compatible**: Does not affect existing attending physicians or residents
+- **Zero Breaking Changes**: All existing functionality remains intact
+
+#### Testing Checklist
+- [ ] Login as admin → See "My Patients" link in sidebar
+- [ ] Create patient → See admin in "Attending Physicians" dropdown
+- [ ] Assign admin to patient → Admin appears in patient's physician list
+- [ ] Check notifications → Admin receives notifications for assigned patients
+- [ ] Dashboard widget → Shows "My Patients" for admin users
+
+---
+
 ## [1.1.0] - 2026-01-11
 
 ### 🎉 Major Features Added
