@@ -73,10 +73,21 @@ class DashboardController extends BaseController {
         $stats['patient_today'] = $stmt->fetch()['count'];
         
         // Catheter Statistics
-        $catheterModel = new Catheter();
-        $catheterStats = $catheterModel->getStatistics();
-        $stats['catheter_total'] = $catheterStats['total'];
-        $stats['catheter_active'] = $catheterStats['active'];
+        // Total catheters (all statuses)
+        $stmt = $this->db->query("
+            SELECT COUNT(*) as count 
+            FROM catheters 
+            WHERE deleted_at IS NULL
+        ");
+        $stats['catheter_total'] = $stmt->fetch()['count'];
+        
+        // Active catheters
+        $stmt = $this->db->query("
+            SELECT COUNT(*) as count 
+            FROM catheters 
+            WHERE status = 'active' AND deleted_at IS NULL
+        ");
+        $stats['catheter_active'] = $stmt->fetch()['count'];
         
         // Catheters removed today
         $stmt = $this->db->query("
