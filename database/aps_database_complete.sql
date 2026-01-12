@@ -1,7 +1,7 @@
 -- =====================================================
 -- Acute Pain Service (APS) Management System
 -- Complete Database Schema with Sample Data
--- Version: 1.1.2
+-- Version: 1.1.3
 -- Date: 2026-01-12
 -- =====================================================
 --
@@ -143,10 +143,10 @@ CREATE TABLE IF NOT EXISTS patients (
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
-    CONSTRAINT chk_age CHECK (age BETWEEN 0 AND 120),
-    CONSTRAINT chk_height CHECK (height BETWEEN 50 AND 250),
-    CONSTRAINT chk_weight CHECK (weight BETWEEN 20 AND 300),
-    CONSTRAINT chk_asa CHECK (asa_status BETWEEN 1 AND 5)
+    CONSTRAINT chk_patients_age CHECK (age BETWEEN 0 AND 120),
+    CONSTRAINT chk_patients_height CHECK (height BETWEEN 50 AND 250),
+    CONSTRAINT chk_patients_weight CHECK (weight BETWEEN 20 AND 300),
+    CONSTRAINT chk_patients_asa CHECK (asa_status BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- Catheters table (Screen 2 Data)
 CREATE TABLE IF NOT EXISTS catheters (
@@ -259,12 +259,12 @@ CREATE TABLE IF NOT EXISTS drug_regimes (
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
     -- Ensure one entry per catheter per POD
-    UNIQUE KEY unique_pod_entry (catheter_id, pod),
+    UNIQUE KEY unique_drug_regime_pod_entry (catheter_id, pod),
     
-    CONSTRAINT chk_pod CHECK (pod >= 0),
-    CONSTRAINT chk_volume CHECK (volume BETWEEN 0 AND 50),
-    CONSTRAINT chk_concentration CHECK (concentration BETWEEN 0 AND 100),
-    CONSTRAINT chk_vnrs CHECK (
+    CONSTRAINT chk_drug_regime_pod CHECK (pod >= 0),
+    CONSTRAINT chk_drug_regime_volume CHECK (volume BETWEEN 0 AND 50),
+    CONSTRAINT chk_drug_regime_concentration CHECK (concentration BETWEEN 0 AND 100),
+    CONSTRAINT chk_drug_regime_vnrs CHECK (
         baseline_vnrs_static BETWEEN 0 AND 10 AND
         baseline_vnrs_dynamic BETWEEN 0 AND 10 AND
         vnrs_15min_static BETWEEN 0 AND 10 AND
@@ -321,10 +321,10 @@ CREATE TABLE IF NOT EXISTS functional_outcomes (
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
     -- Ensure one entry per catheter per POD
-    UNIQUE KEY unique_pod_entry (catheter_id, pod),
+    UNIQUE KEY unique_functional_outcomes_pod_entry (catheter_id, pod),
     
-    CONSTRAINT chk_pod CHECK (pod >= 0),
-    CONSTRAINT chk_spo2 CHECK (spo2_value IS NULL OR spo2_value BETWEEN 0 AND 100)
+    CONSTRAINT chk_functional_outcomes_pod CHECK (pod >= 0),
+    CONSTRAINT chk_functional_outcomes_spo2 CHECK (spo2_value IS NULL OR spo2_value BETWEEN 0 AND 100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- Catheter Removals table (Screen 5 Data - Single Entry)
 CREATE TABLE IF NOT EXISTS catheter_removals (

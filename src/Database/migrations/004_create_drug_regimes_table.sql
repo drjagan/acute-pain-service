@@ -61,12 +61,12 @@ CREATE TABLE IF NOT EXISTS drug_regimes (
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
     -- Ensure one entry per catheter per POD
-    UNIQUE KEY unique_pod_entry (catheter_id, pod),
+    UNIQUE KEY unique_drug_regime_pod_entry (catheter_id, pod),
     
-    CONSTRAINT chk_pod CHECK (pod >= 0),
-    CONSTRAINT chk_volume CHECK (volume BETWEEN 0 AND 50),
-    CONSTRAINT chk_concentration CHECK (concentration BETWEEN 0 AND 100),
-    CONSTRAINT chk_vnrs CHECK (
+    CONSTRAINT chk_drug_regime_pod CHECK (pod >= 0),
+    CONSTRAINT chk_drug_regime_volume CHECK (volume BETWEEN 0 AND 50),
+    CONSTRAINT chk_drug_regime_concentration CHECK (concentration BETWEEN 0 AND 100),
+    CONSTRAINT chk_drug_regime_vnrs CHECK (
         baseline_vnrs_static BETWEEN 0 AND 10 AND
         baseline_vnrs_dynamic BETWEEN 0 AND 10 AND
         vnrs_15min_static BETWEEN 0 AND 10 AND

@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS patients (
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
-    CONSTRAINT chk_age CHECK (age BETWEEN 0 AND 120),
-    CONSTRAINT chk_height CHECK (height BETWEEN 50 AND 250),
-    CONSTRAINT chk_weight CHECK (weight BETWEEN 20 AND 300),
-    CONSTRAINT chk_asa CHECK (asa_status BETWEEN 1 AND 5)
+    CONSTRAINT chk_patients_age CHECK (age BETWEEN 0 AND 120),
+    CONSTRAINT chk_patients_height CHECK (height BETWEEN 50 AND 250),
+    CONSTRAINT chk_patients_weight CHECK (weight BETWEEN 20 AND 300),
+    CONSTRAINT chk_patients_asa CHECK (asa_status BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

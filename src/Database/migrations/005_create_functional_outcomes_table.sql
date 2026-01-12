@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS functional_outcomes (
     FOREIGN KEY (updated_by) REFERENCES users(id),
     
     -- Ensure one entry per catheter per POD
-    UNIQUE KEY unique_pod_entry (catheter_id, pod),
+    UNIQUE KEY unique_functional_outcomes_pod_entry (catheter_id, pod),
     
-    CONSTRAINT chk_pod CHECK (pod >= 0),
-    CONSTRAINT chk_spo2 CHECK (spo2_value IS NULL OR spo2_value BETWEEN 0 AND 100)
+    CONSTRAINT chk_functional_outcomes_pod CHECK (pod >= 0),
+    CONSTRAINT chk_functional_outcomes_spo2 CHECK (spo2_value IS NULL OR spo2_value BETWEEN 0 AND 100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
