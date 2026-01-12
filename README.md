@@ -1,6 +1,6 @@
 # Acute Pain Service (APS) Management System
 
-**Version:** 1.1.1  
+**Version:** 1.1.2  
 **Release Date:** January 2026  
 **License:** MIT
 
@@ -83,9 +83,9 @@ For production deployment on a LAMP server:
 
 ```bash
 # Download latest release
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.1.tar.gz
-tar -xzf v1.1.1.tar.gz
-cd acute-pain-service-1.1.1
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
+tar -xzf v1.1.2.tar.gz
+cd acute-pain-service-1.1.2
 
 # Run automated installation
 sudo chmod +x deployment/scripts/install.sh

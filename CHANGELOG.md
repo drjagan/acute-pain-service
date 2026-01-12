@@ -5,6 +5,57 @@ All notable changes to the Acute Pain Service Management System will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-01-12
+
+### 🚀 Production Deployment Package
+
+#### Added
+- **Automated Installation Script** (`deployment/scripts/install.sh`)
+  - One-command LAMP stack installation
+  - Automatic database creation and configuration
+  - Apache virtual host setup
+  - Admin user creation with generated credentials
+  - Installation time: 15-20 minutes
+
+- **Comprehensive Documentation** (1,900+ lines)
+  - `DEPLOY.md` - Complete production deployment guide
+  - `LAMP_INSTALL.md` - LAMP stack installation guide (Ubuntu 20.04/22.04)
+  - `DEPLOYMENT_SUMMARY.md` - Package overview and quick start
+  - `deployment/DEPLOYMENT_CHECKLIST.md` - Step-by-step checklist
+
+- **Configuration Templates**
+  - `.env.example` - Environment configuration template
+  - `deployment/config/apache-vhost.conf` - Apache virtual host configuration
+  - `.gitattributes` - Git export and line ending settings
+
+#### Fixed
+- **Deprecated Warnings**: Fixed PHP 8.3 deprecation warnings in reports when null values passed to `number_format()`
+- **Notification Dropdown**: Fixed positioning - now properly overlays content instead of expanding within header
+- **Notifications Page**: Fixed 404 error - added route mapping and created missing view
+- **Menu Highlighting**: Fixed "My Patients" menu item staying highlighted when selected
+
+#### Changed
+- Updated `README.md` with deployment information and badges
+- Version bumped from 1.1.1 to 1.1.2
+
+#### Documentation
+- Complete LAMP installation guide for Ubuntu
+- Security hardening procedures
+- Backup and maintenance procedures
+- Troubleshooting section
+- SSL/HTTPS configuration guide
+
+#### Installation
+```bash
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
+tar -xzf v1.1.2.tar.gz
+cd acute-pain-service-1.1.2
+sudo chmod +x deployment/scripts/install.sh
+sudo ./deployment/scripts/install.sh
+```
+
+---
+
 ## [1.1.1] - 2026-01-11
 
 ### 🔑 Role Enhancement - Admins as Attending Physicians

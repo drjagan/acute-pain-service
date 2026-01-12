@@ -645,4 +645,4 @@ sudo journalctl -f
 ---
 
 **Last Updated:** January 12, 2026  
-**For:** Acute Pain Service v1.1.1
+**For:** Acute Pain Service v1.1.2

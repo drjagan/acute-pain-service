@@ -49,8 +49,8 @@ The fastest way to deploy on a fresh Ubuntu server:
 ```bash
 # 1. Upload the application to your server
 cd /tmp
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.1.tar.gz
-tar -xzf v1.1.1.tar.gz
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
+tar -xzf v1.1.2.tar.gz
 cd acute-pain-service-1.1.1
 
 # 2. Make installation script executable
@@ -125,7 +125,7 @@ cd /var/www/acute-pain-service
 # Upload files (use SCP, SFTP, or Git)
 # Option A: Via Git
 sudo git clone https://github.com/drjagan/acute-pain-service.git .
-sudo git checkout v1.1.1
+sudo git checkout v1.1.2
 
 # Option B: Via SCP/SFTP
 # Upload the entire application folder to this directory
@@ -564,7 +564,7 @@ cd /var/www/acute-pain-service
 
 # Pull latest code
 sudo -u www-data git fetch origin
-sudo -u www-data git checkout v1.1.1  # or latest version
+sudo -u www-data git checkout v1.1.2  # or latest version
 
 # Run any new migrations
 php run_migrations_v1.1.php

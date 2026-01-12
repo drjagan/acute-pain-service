@@ -1,4 +1,4 @@
-# Deployment Package Summary - v1.1.1
+# Deployment Package Summary - v1.1.2
 
 Complete production-ready deployment package for Acute Pain Service application.
 
@@ -47,9 +47,9 @@ Complete production-ready deployment package for Acute Pain Service application.
 
 ```bash
 # 1. Download latest release
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.1.tar.gz
-tar -xzf v1.1.1.tar.gz
-cd acute-pain-service-1.1.1
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
+tar -xzf v1.1.2.tar.gz
+cd acute-pain-service-1.1.2
 
 # 2. Make installation script executable
 chmod +x deployment/scripts/install.sh
@@ -328,19 +328,19 @@ sudo ./deployment/scripts/install.sh
 
 ### GitHub Release
 ```
-https://github.com/drjagan/acute-pain-service/releases/tag/v1.1.1
+https://github.com/drjagan/acute-pain-service/releases/tag/v1.1.2
 ```
 
 ### Direct Download
 ```bash
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.1.tar.gz
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
 ```
 
 ### Git Clone
 ```bash
 git clone https://github.com/drjagan/acute-pain-service.git
 cd acute-pain-service
-git checkout v1.1.1
+git checkout v1.1.2
 ```
 
 ---
@@ -371,7 +371,7 @@ git checkout v1.1.1
 
 ## 📈 Version History
 
-### v1.1.1 (Current)
+### v1.1.2 (Current)
 - Production deployment package
 - Automated installation script
 - Complete documentation
@@ -459,7 +459,7 @@ MIT License - Free for commercial and personal use
 
 ---
 
-**Package Version:** 1.1.1  
+**Package Version:** 1.1.2  
 **Release Date:** January 12, 2026  
 **Package Size:** 177KB (compressed)  
 **Documentation:** 1,900+ lines  
