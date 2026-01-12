@@ -82,10 +82,12 @@ The **Acute Pain Service Management System** is a comprehensive web-based applic
 For production deployment on a LAMP server:
 
 ```bash
-# Download latest release
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-tar -xzf v1.1.2.tar.gz
-cd acute-pain-service-1.1.2
+# Clone the repository
+git clone https://github.com/drjagan/acute-pain-service.git
+cd acute-pain-service
+
+# Checkout the latest stable release
+git checkout v1.1.2
 
 # Run automated installation
 sudo chmod +x deployment/scripts/install.sh

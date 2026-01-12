@@ -5,9 +5,9 @@ Complete production-ready deployment package for the Acute Pain Service Manageme
 ## ⚡ Quick Installation
 
 ```bash
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-tar -xzf v1.1.2.tar.gz
-cd acute-pain-service-1.1.2
+git clone https://github.com/drjagan/acute-pain-service.git
+cd acute-pain-service
+git checkout v1.1.2
 sudo chmod +x deployment/scripts/install.sh
 sudo ./deployment/scripts/install.sh
 ```

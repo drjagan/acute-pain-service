@@ -47,16 +47,18 @@ Complete guide for deploying the Acute Pain Service application on a production 
 The fastest way to deploy on a fresh Ubuntu server:
 
 ```bash
-# 1. Upload the application to your server
-cd /tmp
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-tar -xzf v1.1.2.tar.gz
-cd acute-pain-service-1.1.1
+# 1. Clone the repository to your server
+cd /var/www
+sudo git clone https://github.com/drjagan/acute-pain-service.git
+cd acute-pain-service
 
-# 2. Make installation script executable
-chmod +x deployment/scripts/install.sh
+# 2. Checkout the latest stable release
+sudo git checkout v1.1.2
 
-# 3. Run installation as root
+# 3. Make installation script executable
+sudo chmod +x deployment/scripts/install.sh
+
+# 4. Run installation as root
 sudo ./deployment/scripts/install.sh
 ```
 

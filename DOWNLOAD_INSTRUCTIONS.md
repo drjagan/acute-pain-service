@@ -7,14 +7,14 @@
 **Current Version:** v1.1.2
 
 ```bash
-# Download release archive
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-
-# Extract
-tar -xzf v1.1.2.tar.gz
+# Clone the repository
+git clone https://github.com/drjagan/acute-pain-service.git
 
 # Navigate to directory
-cd acute-pain-service-1.1.2
+cd acute-pain-service
+
+# Checkout the latest stable release
+git checkout v1.1.2
 ```
 
 ### Install on LAMP Server
@@ -33,24 +33,7 @@ sudo ./deployment/scripts/install.sh
 
 ## 📥 Download Options
 
-### Option 1: Direct Download (Recommended)
-
-**Latest Release Archive:**
-```
-https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-```
-
-**Using wget:**
-```bash
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-```
-
-**Using curl:**
-```bash
-curl -L -O https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-```
-
-### Option 2: Git Clone
+### Option 1: Git Clone (Recommended)
 
 ```bash
 # Clone repository
