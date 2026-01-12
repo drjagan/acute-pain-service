@@ -20,12 +20,14 @@ Installation guides for different environments and methods.
 
 - **[INSTALL.md](installation/INSTALL.md)** - Development environment setup
 - **[DOWNLOAD_INSTRUCTIONS.md](installation/DOWNLOAD_INSTRUCTIONS.md)** - How to download the application
+- **[ENV_CONFIGURATION.md](installation/ENV_CONFIGURATION.md)** - Environment configuration (.env) guide (NEW in v1.1.3+)
 - **[INSTALLATION_FIXES.md](installation/INSTALLATION_FIXES.md)** - Installation troubleshooting and fixes (v1.1.3)
 
 **Quick Links:**
 - [System Requirements](installation/INSTALL.md#system-requirements)
 - [Local Development Setup](installation/INSTALL.md#installation-steps)
 - [Download Methods](installation/DOWNLOAD_INSTRUCTIONS.md#download-options)
+- [.env Configuration](installation/ENV_CONFIGURATION.md) - **NEW**
 
 ---
 

@@ -1,24 +1,27 @@
 <?php
 /**
  * Database Configuration and Connection Handler
+ * 
+ * This file loads database credentials from .env file (recommended)
+ * and provides a singleton Database connection class.
  */
 
-// Load configuration if available
-$configFile = __DIR__ . '/config.php';
-if (file_exists($configFile)) {
-    require_once $configFile;
-} else {
-    // Fallback to environment variables or defaults
-    if (!defined('DB_HOST')) define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-    if (!defined('DB_PORT')) define('DB_PORT', getenv('DB_PORT') ?: '3306');
-    if (!defined('DB_NAME')) define('DB_NAME', getenv('DB_NAME') ?: 'aps_database');
-    if (!defined('DB_USER')) define('DB_USER', getenv('DB_USER') ?: 'root');
-    if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') ?: '');
-    if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
-}
+// Load environment variables from .env file
+require_once __DIR__ . '/env-loader.php';
+loadEnv(dirname(__DIR__));
+
+// Define database constants from environment variables
+// These provide defaults for development if .env is not present
+if (!defined('DB_HOST')) define('DB_HOST', env('DB_HOST', 'localhost'));
+if (!defined('DB_PORT')) define('DB_PORT', env('DB_PORT', '3306'));
+if (!defined('DB_NAME')) define('DB_NAME', env('DB_NAME', 'aps_database'));
+if (!defined('DB_USER')) define('DB_USER', env('DB_USER', 'root'));
+if (!defined('DB_PASS')) define('DB_PASS', env('DB_PASS', ''));
+if (!defined('DB_CHARSET')) define('DB_CHARSET', env('DB_CHARSET', 'utf8mb4'));
 
 /**
  * Database Singleton Class
+ * Provides a single PDO connection instance throughout the application
  */
 class Database {
     private static $instance = null;
@@ -26,6 +29,7 @@ class Database {
     
     /**
      * Private constructor - Singleton pattern
+     * Establishes database connection on first instantiation
      */
     private function __construct() {
         try {
@@ -50,17 +54,32 @@ class Database {
             // Log error
             error_log("Database connection failed: " . $e->getMessage());
             
-            // User-friendly error
+            // User-friendly error message
             if (defined('APP_ENV') && APP_ENV === 'development') {
-                die("<h1>Database Connection Failed</h1><p>" . $e->getMessage() . "</p><p>Please ensure MySQL is running and database exists.</p>");
+                die("<h1>Database Connection Failed</h1>" .
+                    "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>" .
+                    "<p><strong>Host:</strong> " . htmlspecialchars(DB_HOST) . ":" . htmlspecialchars(DB_PORT) . "</p>" .
+                    "<p><strong>Database:</strong> " . htmlspecialchars(DB_NAME) . "</p>" .
+                    "<p><strong>User:</strong> " . htmlspecialchars(DB_USER) . "</p>" .
+                    "<hr>" .
+                    "<p><strong>Troubleshooting:</strong></p>" .
+                    "<ul>" .
+                    "<li>Ensure MySQL is running</li>" .
+                    "<li>Check database credentials in <code>.env</code> file</li>" .
+                    "<li>Verify database <code>" . htmlspecialchars(DB_NAME) . "</code> exists</li>" .
+                    "<li>Confirm user <code>" . htmlspecialchars(DB_USER) . "</code> has access</li>" .
+                    "</ul>");
             } else {
-                die("<h1>Service Unavailable</h1><p>Please contact your system administrator.</p>");
+                die("<h1>Service Unavailable</h1>" .
+                    "<p>Database connection failed. Please contact your system administrator.</p>");
             }
         }
     }
     
     /**
      * Get singleton instance
+     * 
+     * @return PDO Database connection instance
      */
     public static function getInstance() {
         if (self::$instance === null) {
@@ -70,12 +89,14 @@ class Database {
     }
     
     /**
-     * Prevent cloning
+     * Prevent cloning of singleton
      */
     private function __clone() {}
     
     /**
-     * Prevent unserialization
+     * Prevent unserialization of singleton
+     * 
+     * @throws Exception
      */
     public function __wakeup() {
         throw new Exception("Cannot unserialize singleton");

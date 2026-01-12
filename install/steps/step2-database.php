@@ -34,8 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$dbTest['success']) {
                 $error = 'Cannot connect to database "' . $database . '": ' . $dbTest['message'];
             } else {
-                // Write config file
-                if (writeConfigFile($host, $database, $username, $password, $port)) {
+                // Write .env file (database credentials - SENSITIVE)
+                $envWritten = writeEnvFile($host, $database, $username, $password, $port);
+                
+                // Write config.php file (application settings - NON-SENSITIVE)
+                $configWritten = writeConfigFile($host, $database, $username, $password, $port);
+                
+                if ($envWritten && $configWritten) {
                     $_SESSION['db_configured'] = true;
                     $_SESSION['db_config'] = [
                         'host' => $host,
@@ -45,9 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'password' => $password
                     ];
                     
+                    error_log("[APS Install] Configuration files created: .env and config/config.php");
                     safeRedirect('?step=3');
                 } else {
-                    $error = 'Failed to write configuration file. Check permissions on config/ directory.';
+                    if (!$envWritten) {
+                        $error = 'Failed to write .env file. Check permissions on root directory.';
+                    } else {
+                        $error = 'Failed to write configuration file. Check permissions on config/ directory.';
+                    }
                 }
             }
         }
