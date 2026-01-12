@@ -3,13 +3,19 @@
  * Database Configuration and Connection Handler
  */
 
-// Database Credentials
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'aps_database');
-define('DB_USER', 'root');
-define('DB_PASS', 'Cuddalore-Panruti-Pondicherry');
-define('DB_CHARSET', 'utf8mb4');
+// Load configuration if available
+$configFile = __DIR__ . '/config.php';
+if (file_exists($configFile)) {
+    require_once $configFile;
+} else {
+    // Fallback to environment variables or defaults
+    if (!defined('DB_HOST')) define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+    if (!defined('DB_PORT')) define('DB_PORT', getenv('DB_PORT') ?: '3306');
+    if (!defined('DB_NAME')) define('DB_NAME', getenv('DB_NAME') ?: 'aps_database');
+    if (!defined('DB_USER')) define('DB_USER', getenv('DB_USER') ?: 'root');
+    if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') ?: '');
+    if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
+}
 
 /**
  * Database Singleton Class

@@ -13,6 +13,15 @@
 
 session_start();
 
+// Enable error reporting for installation
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', dirname(__DIR__) . '/logs/install.log');
+
+// Log installation start
+error_log("[APS Install] Installation wizard started - Step: " . ($_GET['step'] ?? 1));
+
 // Configuration
 define('APP_ROOT', dirname(__DIR__));
 define('INSTALL_COMPLETE_FILE', APP_ROOT . '/config/.installed');

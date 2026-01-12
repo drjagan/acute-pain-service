@@ -14,41 +14,75 @@ $seedResults = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log("[APS Install] Step 3: Starting table creation");
+    
     $config = $_SESSION['db_config'];
     
     try {
+        error_log("[APS Install] Connecting to database: {$config['database']}@{$config['host']}");
+        
         // Connect to database
         $pdo = new PDO(
             "mysql:host={$config['host']};dbname={$config['database']};charset=utf8mb4",
             $config['username'],
             $config['password'],
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 10
+            ]
         );
+        
+        error_log("[APS Install] Database connection established");
         
         // Run migrations
         $migrationsPath = dirname(dirname(__DIR__)) . '/src/Database/migrations';
-        $migrationResult = runMigrations($pdo, $migrationsPath);
+        error_log("[APS Install] Migrations path: $migrationsPath");
         
-        if (!$migrationResult['success']) {
-            $error = 'Migration failed: ' . $migrationResult['message'];
+        if (!is_dir($migrationsPath)) {
+            $error = "Migrations directory not found: $migrationsPath";
+            error_log("[APS Install] ERROR: $error");
         } else {
-            $migrationResults = $migrationResult['results'];
+            $migrationResult = runMigrations($pdo, $migrationsPath);
             
-            // Run seed data
-            $seedsPath = dirname(dirname(__DIR__)) . '/src/Database/seeds';
-            $seedResult = runSeeds($pdo, $seedsPath);
-            
-            if (!$seedResult['success']) {
-                $error = 'Seed data failed: ' . $seedResult['message'];
+            if (!$migrationResult['success']) {
+                $error = 'Migration failed: ' . $migrationResult['message'];
+                error_log("[APS Install] Migration error: $error");
             } else {
-                $seedResults = $seedResult['results'];
-                $_SESSION['tables_created'] = true;
-                $success = true;
+                $migrationResults = $migrationResult['results'];
+                error_log("[APS Install] Migrations completed: " . count($migrationResults) . " files");
+                
+                // Run seed data
+                $seedsPath = dirname(dirname(__DIR__)) . '/src/Database/seeds';
+                error_log("[APS Install] Seeds path: $seedsPath");
+                
+                if (!is_dir($seedsPath)) {
+                    error_log("[APS Install] WARNING: Seeds directory not found, skipping");
+                    $_SESSION['tables_created'] = true;
+                    $success = true;
+                } else {
+                    $seedResult = runSeeds($pdo, $seedsPath);
+                    
+                    if (!$seedResult['success']) {
+                        $error = 'Seed data failed: ' . $seedResult['message'];
+                        error_log("[APS Install] Seed error: $error");
+                    } else {
+                        $seedResults = $seedResult['results'];
+                        error_log("[APS Install] Seeds completed: " . count($seedResults) . " files");
+                        $_SESSION['tables_created'] = true;
+                        $success = true;
+                    }
+                }
             }
         }
         
     } catch (PDOException $e) {
-        $error = 'Database error: ' . $e->getMessage();
+        $error = 'Database error: ' . $e->getMessage() . ' (Code: ' . $e->getCode() . ')';
+        error_log("[APS Install] PDO Exception: $error");
+        error_log("[APS Install] Stack trace: " . $e->getTraceAsString());
+    } catch (Exception $e) {
+        $error = 'General error: ' . $e->getMessage();
+        error_log("[APS Install] Exception: $error");
+        error_log("[APS Install] Stack trace: " . $e->getTraceAsString());
     }
 }
 ?>
@@ -79,6 +113,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <i class="bi bi-exclamation-triangle"></i>
     <strong>Installation Error</strong>
     <p class="mb-0 mt-2"><?= htmlspecialchars($error) ?></p>
+</div>
+
+<div class="card border-warning mb-3">
+    <div class="card-header bg-warning bg-opacity-10">
+        <strong><i class="bi bi-bug"></i> Debug Information</strong>
+    </div>
+    <div class="card-body">
+        <p><strong>Migrations Path:</strong> <code><?= htmlspecialchars(dirname(dirname(__DIR__)) . '/src/Database/migrations') ?></code></p>
+        <p><strong>Seeds Path:</strong> <code><?= htmlspecialchars(dirname(dirname(__DIR__)) . '/src/Database/seeds') ?></code></p>
+        <p><strong>Log File:</strong> <code><?= htmlspecialchars(dirname(dirname(__DIR__)) . '/logs/install.log') ?></code></p>
+        <p class="mb-0 small text-muted">Check the log file for detailed error messages.</p>
+    </div>
 </div>
 <?php endif; ?>
 

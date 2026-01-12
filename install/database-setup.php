@@ -6,13 +6,26 @@
  * Usage: php install/database-setup.php
  */
 
-// Configuration
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'aps_database');
-define('DB_USER', 'root');
-define('DB_PASS', 'Cuddalore-Panruti-Pondicherry');
-define('DB_CHARSET', 'utf8mb4');
+// Configuration - Read from config.php or environment variables
+$configFile = dirname(__DIR__) . '/config/config.php';
+if (file_exists($configFile)) {
+    require_once $configFile;
+} else {
+    // Fallback to environment variables or command line arguments
+    define('DB_HOST', getenv('DB_HOST') ?: ($argv[1] ?? 'localhost'));
+    define('DB_PORT', getenv('DB_PORT') ?: ($argv[2] ?? '3306'));
+    define('DB_NAME', getenv('DB_NAME') ?: ($argv[3] ?? 'aps_database'));
+    define('DB_USER', getenv('DB_USER') ?: ($argv[4] ?? 'root'));
+    define('DB_PASS', getenv('DB_PASS') ?: ($argv[5] ?? ''));
+    define('DB_CHARSET', 'utf8mb4');
+}
+
+// Show usage if password is empty
+if (empty(DB_PASS) && php_sapi_name() === 'cli') {
+    echo "Usage: php database-setup.php [host] [port] [database] [username] [password]\n";
+    echo "Or set environment variables: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS\n";
+    echo "Or create config/config.php with database credentials\n\n";
+}
 
 echo "=====================================\n";
 echo "  APS DATABASE INSTALLATION\n";

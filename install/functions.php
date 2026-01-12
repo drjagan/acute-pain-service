@@ -63,14 +63,19 @@ function checkWritableDirectories() {
  */
 function testDatabaseConnection($host, $username, $password, $database = null) {
     try {
+        error_log("[APS Install] Testing database connection to $host as $username");
+        
         $dsn = "mysql:host=$host";
         if ($database) {
             $dsn .= ";dbname=$database";
         }
         
         $pdo = new PDO($dsn, $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 5
         ]);
+        
+        error_log("[APS Install] Database connection successful");
         
         return [
             'success' => true,
@@ -78,9 +83,12 @@ function testDatabaseConnection($host, $username, $password, $database = null) {
             'pdo' => $pdo
         ];
     } catch (PDOException $e) {
+        error_log("[APS Install] Database connection failed: " . $e->getMessage());
+        
         return [
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'code' => $e->getCode()
         ];
     }
 }
@@ -115,40 +123,75 @@ function createDatabase($host, $username, $password, $database) {
  */
 function runMigrations($pdo, $migrationsPath) {
     try {
+        error_log("[APS Install] Starting migrations from: $migrationsPath");
+        
         $migrationFiles = glob($migrationsPath . '/*.sql');
+        
+        if (empty($migrationFiles)) {
+            error_log("[APS Install] ERROR: No migration files found in $migrationsPath");
+            return [
+                'success' => false,
+                'message' => "No migration files found in $migrationsPath"
+            ];
+        }
+        
         sort($migrationFiles); // Run in order
+        error_log("[APS Install] Found " . count($migrationFiles) . " migration files");
         
         $results = [];
         
         foreach ($migrationFiles as $file) {
             $filename = basename($file);
+            error_log("[APS Install] Running migration: $filename");
+            
             $sql = file_get_contents($file);
+            
+            if (empty($sql)) {
+                error_log("[APS Install] WARNING: Empty SQL file: $filename");
+                continue;
+            }
             
             // Split by semicolons but respect SQL delimiters
             $statements = explode(';', $sql);
+            $statementCount = 0;
             
             foreach ($statements as $statement) {
                 $statement = trim($statement);
-                if (!empty($statement)) {
-                    $pdo->exec($statement);
+                if (!empty($statement) && !preg_match('/^--/', $statement)) {
+                    try {
+                        $pdo->exec($statement);
+                        $statementCount++;
+                    } catch (PDOException $e) {
+                        error_log("[APS Install] ERROR in $filename: " . $e->getMessage());
+                        throw $e;
+                    }
                 }
             }
             
+            error_log("[APS Install] ✓ $filename completed ($statementCount statements)");
+            
             $results[] = [
                 'file' => $filename,
-                'status' => 'success'
+                'status' => 'success',
+                'statements' => $statementCount
             ];
         }
+        
+        error_log("[APS Install] All migrations completed successfully");
         
         return [
             'success' => true,
             'results' => $results
         ];
     } catch (PDOException $e) {
+        $errorMsg = "Migration failed in " . ($filename ?? 'unknown') . ": " . $e->getMessage();
+        error_log("[APS Install] FATAL ERROR: $errorMsg");
+        
         return [
             'success' => false,
-            'message' => $e->getMessage(),
-            'file' => $filename ?? 'unknown'
+            'message' => $errorMsg,
+            'file' => $filename ?? 'unknown',
+            'error_code' => $e->getCode()
         ];
     }
 }
