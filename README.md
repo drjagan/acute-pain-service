@@ -102,9 +102,13 @@ The installation script will:
 
 ### Documentation
 
-- **[DEPLOY.md](DEPLOY.md)** - Complete deployment guide
-- **[LAMP_INSTALL.md](LAMP_INSTALL.md)** - LAMP stack installation
-- **[INSTALL.md](INSTALL.md)** - Development setup guide
+**📚 [Complete Documentation](documentation/README.md)** - Full documentation index
+
+Quick links:
+- **[Deployment Guide](documentation/deployment/DEPLOY.md)** - Production deployment
+- **[Database Setup](documentation/database/README.md)** - PhpMyAdmin import (2 minutes)
+- **[Installation Guide](documentation/installation/INSTALL.md)** - Development setup
+- **[Troubleshooting](documentation/troubleshooting/)** - Common issues & fixes
 
 ### Development Setup
 
