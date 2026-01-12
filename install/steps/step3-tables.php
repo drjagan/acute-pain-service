@@ -74,6 +74,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
+        // Verify tables were actually created
+        if ($success && !$error) {
+            try {
+                $stmt = $pdo->query("SHOW TABLES");
+                $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                
+                if (count($tables) < 10) {
+                    $error = "Tables were not created properly. Expected at least 10 tables, found " . count($tables);
+                    $success = false;
+                    error_log("[APS Install] ERROR: Only " . count($tables) . " tables found after migration");
+                } else {
+                    error_log("[APS Install] Success: " . count($tables) . " tables created");
+                }
+            } catch (PDOException $e) {
+                $error = "Could not verify table creation: " . $e->getMessage();
+                $success = false;
+                error_log("[APS Install] ERROR: Table verification failed - " . $e->getMessage());
+            }
+        }
+        
+        // Check for empty results
+        if ($success && empty($migrationResults)) {
+            $error = "No migration files were processed. Check migrations path.";
+            $success = false;
+            error_log("[APS Install] ERROR: No migrations were run");
+        }
+        
     } catch (PDOException $e) {
         $error = 'Database error: ' . $e->getMessage() . ' (Code: ' . $e->getCode() . ')';
         error_log("[APS Install] PDO Exception: $error");
@@ -90,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <i class="bi bi-table"></i> Create Database Tables
 </h3>
 
-<?php if (!$_SERVER['REQUEST_METHOD'] === 'POST' || $error): ?>
+<?php if ($_SERVER['REQUEST_METHOD'] !== 'POST' || $error): ?>
 
 <div class="alert alert-info">
     <i class="bi bi-info-circle"></i>

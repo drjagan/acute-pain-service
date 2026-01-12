@@ -88,13 +88,15 @@ Common issues, errors, and their solutions.
 
 - **[HEADER_FIX.md](troubleshooting/HEADER_FIX.md)** - "Headers already sent" error fix
 - **[SQL_CONSTRAINT_FIX.md](troubleshooting/SQL_CONSTRAINT_FIX.md)** - PhpMyAdmin import error fix
+- **[STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md)** - Step 3 false success message fix
 
 **Common Issues:**
 | Issue | Solution | Document |
 |-------|----------|----------|
-| Installation wizard stalls | Check logs, enable debugging | [INSTALLATION_FIXES.md](installation/INSTALLATION_FIXES.md) |
+| Step 3 shows success but no tables | Logic operator fix applied | [STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md) |
 | "Headers already sent" error | Output buffering fix applied | [HEADER_FIX.md](troubleshooting/HEADER_FIX.md) |
 | PhpMyAdmin import fails | Constraint name fix applied | [SQL_CONSTRAINT_FIX.md](troubleshooting/SQL_CONSTRAINT_FIX.md) |
+| Installation wizard stalls | Check logs, enable debugging | [INSTALLATION_FIXES.md](installation/INSTALLATION_FIXES.md) |
 | Database connection fails | Check credentials, MySQL running | [Database README](database/README.md#troubleshooting) |
 | Permission errors | Set correct folder permissions | [DEPLOY.md](deployment/DEPLOY.md#manual-installation) |
 
