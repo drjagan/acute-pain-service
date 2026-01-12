@@ -37,6 +37,10 @@ define('FLASH_ERROR', 'danger');
 define('FLASH_WARNING', 'warning');
 define('FLASH_INFO', 'info');
 
+// Security Settings
+define('PASSWORD_COST', 12); // Bcrypt cost factor (4-31, default 10, recommended 12)
+define('PASSWORD_MIN_LENGTH', 8); // Minimum password length
+
 // Date Formats
 define('DATE_FORMAT_DB', 'Y-m-d');
 define('DATE_FORMAT_DISPLAY', 'd-m-Y');
