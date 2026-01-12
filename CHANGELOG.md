@@ -5,6 +5,81 @@ All notable changes to the Acute Pain Service Management System will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-01-12
+
+### 🐛 Installation Fixes & Improvements
+
+#### Added
+- **SQL Export File for PhpMyAdmin** (`database/aps_database_complete.sql`)
+  - Complete database schema with all 16 tables
+  - Sample data (4 test users with password: admin123)
+  - Lookup data for dropdowns
+  - Ready for direct import in PhpMyAdmin
+  - Size: 28 KB, 783 lines
+  - Installation time: 2-3 minutes
+
+- **Installation Wizard Debugging**
+  - Comprehensive error logging to `logs/install.log`
+  - Visual debug information panel on error screens
+  - Step-by-step execution logging
+  - SQL statement counting
+  - Stack trace logging for exceptions
+  - Path validation and directory checks
+  - Connection timeout handling (5-10 seconds)
+  - Empty file detection
+
+- **Documentation**
+  - `database/README.md` - Complete PhpMyAdmin import guide (500+ lines)
+  - `INSTALLATION_FIXES.md` - Comprehensive troubleshooting guide
+  - Multiple installation methods documented
+  - Common issues and solutions
+  - Security best practices
+
+#### Fixed
+- **Hardcoded Credentials**: Removed hardcoded database password from `config/database.php`
+  - Now loads from `config/config.php` (if exists)
+  - Falls back to environment variables (`DB_HOST`, `DB_USER`, `DB_PASS`)
+  - Supports `.env` file configuration
+  - CLI arguments support in `install/database-setup.php`
+  - Follows 12-factor app pattern
+
+- **Installation Wizard Stalling**: Enhanced error handling and reporting
+  - Better error messages with codes
+  - Migration/seed path validation
+  - Database connection error details
+  - Empty SQL file warnings
+  - Detailed error display on failure
+
+#### Changed
+- `config/database.php` - Dynamic credential loading instead of hardcoded values
+- `install/functions.php` - Added extensive logging throughout
+- `install/index.php` - Enabled error reporting and logging
+- `install/steps/step3-tables.php` - Added debug information display
+- `install/database-setup.php` - Accepts CLI arguments and environment variables
+
+#### Security
+- ✅ No passwords committed to git
+- ✅ Environment variable support for sensitive data
+- ✅ Multiple secure configuration methods
+- ✅ Compatible with Docker and CI/CD pipelines
+
+#### Installation Options
+Three methods now available:
+1. **PhpMyAdmin Import** (Fastest - 2 minutes)
+   - Import `database/aps_database_complete.sql`
+   - Update `config/config.php` credentials
+   - Login with admin/admin123
+
+2. **Installation Wizard** (With debugging)
+   - Navigate to `/install/`
+   - Check `logs/install.log` if issues occur
+   - Debug info displayed on errors
+
+3. **Command Line**
+   - `php install/database-setup.php [host] [port] [db] [user] [pass]`
+
+---
+
 ## [1.1.2] - 2026-01-12
 
 ### 🚀 Production Deployment Package
