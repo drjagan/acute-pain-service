@@ -4,8 +4,7 @@
  */
 
 if (!isset($_SESSION['tables_created'])) {
-    header('Location: ?step=3');
-    exit;
+    safeRedirect('?step=3');
 }
 
 $error = null;
@@ -44,8 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result['success']) {
                 $_SESSION['admin_created'] = true;
                 $_SESSION['admin_username'] = $username;
-                header('Location: ?step=5');
-                exit;
+                safeRedirect('?step=5');
             } else {
                 $error = $result['message'];
             }

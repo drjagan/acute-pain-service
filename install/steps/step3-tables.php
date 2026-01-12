@@ -4,8 +4,7 @@
  */
 
 if (!isset($_SESSION['db_configured'])) {
-    header('Location: ?step=2');
-    exit;
+    safeRedirect('?step=2');
 }
 
 $error = null;

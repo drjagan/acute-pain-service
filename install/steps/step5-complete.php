@@ -4,8 +4,7 @@
  */
 
 if (!isset($_SESSION['admin_created'])) {
-    header('Location: ?step=4');
-    exit;
+    safeRedirect('?step=4');
 }
 
 // Mark installation as complete

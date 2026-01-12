@@ -45,8 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'password' => $password
                     ];
                     
-                    header('Location: ?step=3');
-                    exit;
+                    safeRedirect('?step=3');
                 } else {
                     $error = 'Failed to write configuration file. Check permissions on config/ directory.';
                 }

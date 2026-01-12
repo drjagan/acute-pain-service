@@ -375,3 +375,17 @@ function markInstallationComplete() {
 function sanitizeInput($input) {
     return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Safe redirect function that works with output buffering
+ */
+function safeRedirect($url) {
+    // Clear any output buffers
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    
+    // Send redirect header
+    header('Location: ' . $url);
+    exit;
+}

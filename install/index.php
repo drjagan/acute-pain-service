@@ -11,6 +11,9 @@
  * 5. Finalize installation
  */
 
+// Start output buffering to prevent "headers already sent" errors
+ob_start();
+
 session_start();
 
 // Enable error reporting for installation
@@ -28,6 +31,10 @@ define('INSTALL_COMPLETE_FILE', APP_ROOT . '/config/.installed');
 
 // Check if already installed
 if (file_exists(INSTALL_COMPLETE_FILE) && !isset($_GET['reinstall'])) {
+    // Clear output buffer before redirect
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
     header('Location: ../public/index.php');
     exit('Installation already completed. Delete config/.installed to reinstall.');
 }
@@ -222,6 +229,10 @@ require_once 'functions.php';
                         include 'steps/step5-complete.php';
                         break;
                     default:
+                        // Invalid step, redirect to step 1
+                        while (ob_get_level()) {
+                            ob_end_clean();
+                        }
                         header('Location: ?step=1');
                         exit;
                 }
