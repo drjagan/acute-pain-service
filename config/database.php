@@ -11,12 +11,12 @@ require_once __DIR__ . '/env-loader.php';
 loadEnv(dirname(__DIR__));
 
 // Define database constants from environment variables
-// These provide defaults for development if .env is not present
-if (!defined('DB_HOST')) define('DB_HOST', env('DB_HOST', 'localhost'));
+// Fallback defaults are set for SBVU Cloudron deployment
+if (!defined('DB_HOST')) define('DB_HOST', env('DB_HOST', 'mysql'));
 if (!defined('DB_PORT')) define('DB_PORT', env('DB_PORT', '3306'));
-if (!defined('DB_NAME')) define('DB_NAME', env('DB_NAME', 'aps_database'));
-if (!defined('DB_USER')) define('DB_USER', env('DB_USER', 'root'));
-if (!defined('DB_PASS')) define('DB_PASS', env('DB_PASS', ''));
+if (!defined('DB_NAME')) define('DB_NAME', env('DB_NAME', 'a916f81cc97ef00e'));
+if (!defined('DB_USER')) define('DB_USER', env('DB_USER', 'a916f81cc97ef00e'));
+if (!defined('DB_PASS')) define('DB_PASS', env('DB_PASS', '33050ba714a937bf69970570779e802c33b9faa11e4864d4'));
 if (!defined('DB_CHARSET')) define('DB_CHARSET', env('DB_CHARSET', 'utf8mb4'));
 
 /**

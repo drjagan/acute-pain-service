@@ -59,6 +59,8 @@ function loadEnv($path = null) {
             }
         }
     }
+    
+    return true;
 }
 
 /**
