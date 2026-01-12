@@ -91,10 +91,12 @@ Common issues, errors, and their solutions.
 - **[HEADER_FIX.md](troubleshooting/HEADER_FIX.md)** - "Headers already sent" error fix
 - **[SQL_CONSTRAINT_FIX.md](troubleshooting/SQL_CONSTRAINT_FIX.md)** - PhpMyAdmin import error fix
 - **[STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md)** - Step 3 false success message fix
+- **[LOOKUP_TABLES_FIX.md](troubleshooting/LOOKUP_TABLES_FIX.md)** - Lookup tables missing error fix
 
 **Common Issues:**
 | Issue | Solution | Document |
 |-------|----------|----------|
+| Lookup tables not found error | Run fix script or create manually | [LOOKUP_TABLES_FIX.md](troubleshooting/LOOKUP_TABLES_FIX.md) |
 | Step 3 shows success but no tables | Logic operator fix applied | [STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md) |
 | "Headers already sent" error | Output buffering fix applied | [HEADER_FIX.md](troubleshooting/HEADER_FIX.md) |
 | PhpMyAdmin import fails | Constraint name fix applied | [SQL_CONSTRAINT_FIX.md](troubleshooting/SQL_CONSTRAINT_FIX.md) |
