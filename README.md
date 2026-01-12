@@ -1,8 +1,12 @@
 # Acute Pain Service (APS) Management System
 
-**Version:** 1.0.0  
+**Version:** 1.1.1  
 **Release Date:** January 2026  
-**License:** Internal Use Only
+**License:** MIT
+
+[![PHP Version](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://www.php.net/)
+[![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -71,68 +75,55 @@ The **Acute Pain Service Management System** is a comprehensive web-based applic
 
 ---
 
-## 🚀 Quick Installation
+## 🚀 Installation
 
-### Method 1: Installation Wizard (Recommended)
+### Quick Start (Production Server)
 
-1. **Download/Extract** the application to your web directory
+For production deployment on a LAMP server:
 
-2. **Set Permissions:**
-   ```bash
-   chmod -R 755 public/
-   chmod -R 777 config/
-   chmod -R 777 logs/
-   chmod -R 777 public/uploads/
-   chmod -R 777 public/exports/
-   ```
+```bash
+# Download latest release
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.1.tar.gz
+tar -xzf v1.1.1.tar.gz
+cd acute-pain-service-1.1.1
 
-3. **Navigate to Installation Wizard:**
-   ```
-   http://yourdomain.com/install/
-   ```
+# Run automated installation
+sudo chmod +x deployment/scripts/install.sh
+sudo ./deployment/scripts/install.sh
+```
 
-4. **Follow the 5-step wizard:**
-   - Step 1: System Requirements Check
-   - Step 2: Database Configuration
-   - Step 3: Create Tables & Seed Data
-   - Step 4: Create Admin Account
-   - Step 5: Complete Installation
+The installation script will:
+- Install Apache, MySQL 8.0, PHP 8.3
+- Create database and configure application
+- Set up virtual host and permissions
+- Create admin user and display credentials
 
-5. **Delete the install folder:**
-   ```bash
-   rm -rf install/
-   ```
+**Installation time:** ~15-20 minutes
 
-6. **Login:**
-   ```
-   http://yourdomain.com/public/
-   ```
+### Documentation
 
-### Method 2: Manual Installation
+- **[DEPLOY.md](DEPLOY.md)** - Complete deployment guide
+- **[LAMP_INSTALL.md](LAMP_INSTALL.md)** - LAMP stack installation
+- **[INSTALL.md](INSTALL.md)** - Development setup guide
 
-1. **Create Database:**
-   ```sql
-   CREATE DATABASE aps_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
+### Development Setup
 
-2. **Update Configuration:**
-   - Copy `config/config.example.php` to `config/config.php`
-   - Update database credentials
+For local development:
 
-3. **Run Migrations:**
-   ```bash
-   mysql -u username -p aps_database < src/Database/migrations/*.sql
-   ```
+```bash
+# Clone repository
+git clone https://github.com/drjagan/acute-pain-service.git
+cd acute-pain-service
 
-4. **Run Seeds:**
-   ```bash
-   mysql -u username -p aps_database < src/Database/seeds/*.sql
-   ```
+# Configure environment
+cp .env.example .env
+nano .env  # Update database credentials
 
-5. **Start Server:**
-   ```bash
-   php -S localhost:8000 -t public/
-   ```
+# Start PHP development server
+php -S localhost:8000 -t public/
+```
+
+Visit `http://localhost:8000` in your browser.
 
 ---
 
