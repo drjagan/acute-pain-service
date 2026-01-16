@@ -5,6 +5,185 @@ All notable changes to the Acute Pain Service Management System will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-01-16
+
+### 🎯 Master Data Management System (Major Feature)
+
+#### Added
+
+**New Master Data Management System**
+- Centralized admin interface for all lookup tables
+- Dashboard at `/masterdata` with 9 data type cards
+- Unified CRUD operations across all master data types
+- Settings page integration (Settings → Master Data)
+
+**9 Master Data Types Available**
+1. 🩺 **Catheter Indications** (NEW) - 14 seed entries
+2. 📋 **Removal Indications** (NEW) - 10 seed entries  
+3. 🚨 **Sentinel Events** (NEW) - 8 seed entries
+4. 🏥 **Specialties** (NEW) - 15 seed entries
+5. 🔪 **Surgeries** (Enhanced) - 50+ entries with specialty links
+6. 💊 **Drugs** (Enhanced) - 12 entries with sorting
+7. 💉 **Adjuvants** (Enhanced) - 8 entries with sorting
+8. 🩹 **Comorbidities** (Enhanced) - 20+ entries with sorting
+9. ⚠️ **Red Flags** (Enhanced) - 15+ entries (renamed from complications)
+
+**Rich CRUD Features**
+- ➕ Create with duplicate detection
+- ✏️ Edit with form validation
+- 🗑️ Soft delete (data preserved)
+- 🔄 Restore deleted entries
+- 🔍 Real-time search across all fields
+- 📊 Pagination (20 per page, configurable)
+- 📥 CSV export functionality
+- 👁️ View active and inactive entries
+- 🎚️ Active/inactive toggle (AJAX)
+- ⋮⋮ Drag & drop reordering (7 types)
+
+**Database Tables (4 New)**
+- `lookup_catheter_indications` - Reasons for catheter insertion
+- `lookup_removal_indications` - Reasons for catheter removal  
+- `lookup_sentinel_events` - Critical complications
+- `lookup_specialties` - Medical specialties
+
+**Database Enhancements (5 Tables)**
+- Added `specialty_id` foreign key to `lookup_surgeries`
+- Added `sort_order` and `deleted_at` to all lookup tables
+- Renamed `lookup_complications` to `lookup_red_flags`
+- Comprehensive seed data for all tables
+- Foreign key constraints with cascading
+
+**Backend Architecture**
+- `BaseLookupModel.php` - Abstract base with 15+ reusable methods
+- 9 specialized model classes extending base
+- `MasterDataController.php` - 15 action methods, 400+ lines
+- RESTful routing pattern (`/masterdata/{type}/*`)
+- Configuration-driven via `config/masterdata.php`
+
+**Frontend Components**
+- `masterdata/index.php` - Dashboard with 9 cards
+- `masterdata/list.php` - Generic list view with drag-drop
+- `masterdata/form.php` - Dynamic add/edit form
+- Select2 integration for searchable dropdowns
+- Bootstrap 5 responsive design
+
+**Form Enhancements**
+- Patient registration: Specialty dropdown with surgery filtering
+- Catheter insertion: Catheter indication from lookup
+- Catheter removal: Removal indication from lookup
+- Dynamic field visibility based on selections
+
+**Helper Scripts**
+- `run_master_data_migrations_v2.php` - Seeder script
+- `fix_unique_constraints.php` - Fix installation issues
+
+**Documentation (3 New Files)**
+- `IMPLEMENTATION_MASTER_DATA.md` (1500+ lines) - Complete guide
+- `FIXES_APPLIED.md` (800+ lines) - Bug fix documentation
+- `AGENTS.md` (600+ lines) - Development guide
+
+#### Fixed
+
+**Critical Bugs (Applied to All 9 Types)**
+1. **SQL Error in hasColumn()** - MariaDB placeholder issue
+   - Changed from prepared statement to direct query
+   - Location: `BaseLookupModel.php:267`
+
+2. **Duplicate Entry Fatal Error**
+   - Added try-catch blocks in create/update
+   - User-friendly error messages
+   - Location: `MasterDataController.php:120-215`
+
+3. **Drag & Drop Not Working**
+   - Handle-only dragging implemented
+   - Visual feedback (opacity, cursor)
+   - Success indicators (green checkmark)
+   - Location: `list.php:249-310`
+
+4. **Console Errors from Browser Extensions**
+   - Suppressed "message port closed" errors
+   - Location: `list.php:215-220`
+
+5. **Reorder AJAX Issues**
+   - Fixed POST data reading from JSON body
+   - Location: `MasterDataController.php:252-267`
+
+6. **Silent Sort Order Failures**
+   - Added comprehensive error logging
+   - Location: `BaseLookupModel.php:135-165`
+
+7. **Unique Constraint Violations**
+   - Added `fix_unique_constraints.php` script
+   - Prevents duplicate key errors
+
+#### Changed
+
+**Updated Controllers (3)**
+- `PatientController.php` - Added specialty filtering for surgeries
+- `CatheterController.php` - Integrated new lookup tables
+- `SettingsController.php` - Added master data section
+
+**Updated Models (5)**
+- `Patient.php` - Added specialty-based surgery methods
+- `Catheter.php` - Updated to use new indications
+- Existing lookup models enhanced with soft delete
+
+**Updated Views (8)**
+- `patients/create.php` - Specialty and filtered surgery dropdowns
+- `patients/edit.php` - Same enhancements as create
+- `catheters/create.php` - Catheter indication dropdown
+- `catheters/edit.php` - Enhanced form (NEW)
+- `catheters/remove.php` - Removal indication dropdown
+- `outcomes/edit.php` - Enhanced form (NEW)
+- `regimes/edit.php` - Enhanced form (NEW)
+- `settings/index.php` - Master data section with 9 cards
+
+**Routes (18 New)**
+- `GET /masterdata` - Dashboard
+- `GET /masterdata/{type}` - List
+- `GET /masterdata/{type}/create` - Add form
+- `POST /masterdata/{type}` - Store
+- `GET /masterdata/{type}/{id}/edit` - Edit form
+- `POST /masterdata/{type}/{id}` - Update
+- `POST /masterdata/{type}/{id}/delete` - Soft delete
+- `POST /masterdata/{type}/{id}/restore` - Restore
+- `POST /masterdata/{type}/{id}/toggle` - Toggle active (AJAX)
+- `POST /masterdata/{type}/reorder` - Reorder (AJAX)
+- `GET /masterdata/{type}/export` - CSV export
+- Plus 7 more for different types
+
+#### Security
+- ✅ CSRF protection on all master data forms
+- ✅ Admin-only access to master data management
+- ✅ SQL injection prevention via prepared statements
+- ✅ XSS prevention via output escaping
+- ✅ Soft deletes (data never permanently lost)
+- ✅ Input sanitization on all fields
+
+#### Performance
+- ✅ Pagination for large datasets (20 per page)
+- ✅ Database indexing on all foreign keys
+- ✅ AJAX toggles (no full page reload)
+- ✅ Efficient JOINs to minimize queries
+- ✅ Lazy loading of data
+
+#### Database Migration Required
+
+**Action Required**: Run these migrations to upgrade from v1.1.3:
+
+```sql
+-- Located in src/Database/migrations/
+013_create_new_lookup_tables.sql
+014_update_surgeries_with_specialties.sql
+```
+
+**Optional**: Run seeder script for sample data:
+```bash
+php run_master_data_migrations_v2.php
+```
+
+---
+
 ## [1.1.3] - 2026-01-12
 
 ### 🐛 Installation Fixes & Improvements

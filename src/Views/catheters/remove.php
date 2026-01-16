@@ -103,9 +103,31 @@
                     <label for="indication" class="form-label">Primary Indication <span class="text-danger">*</span></label>
                     <select class="form-select" id="indication" name="indication" required>
                         <option value="">Select indication...</option>
-                        <?php foreach ($indications as $value => $label): ?>
-                        <option value="<?= $value ?>"><?= e($label) ?></option>
-                        <?php endforeach; ?>
+                        <?php 
+                        // Group by planned/unplanned
+                        $planned = array_filter($indications, fn($i) => $i['is_planned']);
+                        $unplanned = array_filter($indications, fn($i) => !$i['is_planned']);
+                        ?>
+                        <?php if (!empty($planned)): ?>
+                        <optgroup label="Planned Removal">
+                            <?php foreach ($planned as $indication): ?>
+                            <option value="<?= $indication['code'] ?>" 
+                                    data-requires-notes="<?= $indication['requires_notes'] ? '1' : '0' ?>">
+                                <?= e($indication['name']) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <?php endif; ?>
+                        <?php if (!empty($unplanned)): ?>
+                        <optgroup label="Unplanned Removal">
+                            <?php foreach ($unplanned as $indication): ?>
+                            <option value="<?= $indication['code'] ?>" 
+                                    data-requires-notes="<?= $indication['requires_notes'] ? '1' : '0' ?>">
+                                <?= e($indication['name']) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <?php endif; ?>
                     </select>
                     <div class="invalid-feedback">Please select an indication</div>
                 </div>

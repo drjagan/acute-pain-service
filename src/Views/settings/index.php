@@ -116,28 +116,54 @@
                 </p>
                 
                 <div class="list-group list-group-flush mb-3">
-                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-database-gear"></i> All Master Data</span>
+                        <a href="<?= BASE_URL ?>/masterdata/index" class="btn btn-sm btn-warning">
+                            <i class="bi bi-grid"></i> Manage All
+                        </a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-clipboard-pulse"></i> Catheter Indications</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/catheter_indications" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-x-circle"></i> Removal Indications</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/removal_indications" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-hospital"></i> Specialties & Surgeries</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/specialties" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-heart-pulse"></i> Comorbidities</span>
-                        <span class="badge bg-secondary">Coming Soon</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/comorbidities" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
                     </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
-                        <span><i class="bi bi-bandaid"></i> Surgeries</span>
-                        <span class="badge bg-secondary">Coming Soon</span>
-                    </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-capsule"></i> Drugs & Adjuvants</span>
-                        <span class="badge bg-secondary">Coming Soon</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/drugs" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
                     </div>
-                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 text-muted">
-                        <span><i class="bi bi-exclamation-triangle"></i> Red Flags</span>
-                        <span class="badge bg-secondary">Coming Soon</span>
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span><i class="bi bi-exclamation-triangle"></i> Sentinel Events & Red Flags</span>
+                        <a href="<?= BASE_URL ?>/masterdata/list/sentinel_events" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-gear"></i> Configure
+                        </a>
                     </div>
                 </div>
                 
-                <div class="alert alert-warning mb-0">
+                <div class="alert alert-success mb-0">
                     <small>
-                        <i class="bi bi-info-circle"></i>
-                        Master data management will be available in v1.2.0
+                        <i class="bi bi-check-circle"></i>
+                        <strong>v1.2.0:</strong> Master data management is now available!
                     </small>
                 </div>
             </div>

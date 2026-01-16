@@ -20,6 +20,11 @@ $uri = strtok($uri, '?');
 // Remove trailing slash
 $uri = rtrim($uri, '/');
 
+// Debug logging for master data requests
+if (strpos($uri, '/masterdata/') === 0) {
+    error_log("Master Data Request: $method $uri");
+}
+
 // Default route
 if (empty($uri) || $uri === '/') {
     if (isAuthenticated()) {
@@ -42,6 +47,9 @@ $routes = [
     
     // Dashboard
     'GET /dashboard' => 'DashboardController@index',
+    
+    // Master Data (v1.2.0)
+    'GET /masterdata/index' => 'MasterDataController@index',
     
     // Patients (Screen 1)
     'GET /patients' => 'PatientController@index',
@@ -83,6 +91,7 @@ if (isset($routes[$route])) {
             'users' => 'UserController',
             'notifications' => 'NotificationController',
             'settings' => 'SettingsController',
+            'masterdata' => 'MasterDataController',
         ];
         
         $controllerName = $controllerMap[$parts[0]] ?? ucfirst($parts[0]) . 'Controller';
@@ -97,7 +106,13 @@ if (isset($routes[$route])) {
             if (method_exists($controller, $action)) {
                 call_user_func_array([$controller, $action], $params);
                 exit;
+            } else {
+                // Debug: Method not found
+                error_log("Method '$action' not found in $controllerClass. URI: $uri");
             }
+        } else {
+            // Debug: Controller not found
+            error_log("Controller not found: $controllerClass. File: $controllerFile. URI: $uri");
         }
     }
     
