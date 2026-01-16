@@ -183,17 +183,25 @@
                             id="surgery" 
                             name="surgery[]" 
                             multiple 
-                            size="4">
-                        <?php foreach ($surgeries as $surgery): ?>
-                        <option value="<?= $surgery['id'] ?>">
-                            <?= e($surgery['name']) ?>
-                            <?php if ($surgery['speciality']): ?>
-                                <small>(<?= e(ucwords(str_replace('_', ' ', $surgery['speciality']))) ?>)</small>
+                            size="6">
+                        <?php 
+                        $currentSpecialty = '';
+                        foreach ($surgeries as $surgery): 
+                            // Group by specialty
+                            if (($surgery['specialty_name'] ?? 'Uncategorized') != $currentSpecialty):
+                                if ($currentSpecialty != ''): ?>
+                                    </optgroup>
+                                <?php endif;
+                                $currentSpecialty = $surgery['specialty_name'] ?? 'Uncategorized'; ?>
+                                <optgroup label="<?= e($currentSpecialty) ?>">
                             <?php endif; ?>
-                        </option>
+                            <option value="<?= $surgery['id'] ?>" data-specialty-id="<?= $surgery['specialty_id'] ?>">
+                                <?= e($surgery['name']) ?>
+                            </option>
                         <?php endforeach; ?>
+                        </optgroup>
                     </select>
-                    <div class="form-text">Hold Ctrl/Cmd to select multiple procedures</div>
+                    <div class="form-text">Hold Ctrl/Cmd to select multiple procedures. Filtered by selected specialty.</div>
                 </div>
                 
                 <div class="col-md-3 mb-3">
@@ -358,6 +366,45 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 500);
     });
+});
+
+// Specialty-Surgery Filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const specialtySelect = document.getElementById('speciality');
+    const surgerySelect = document.getElementById('surgery');
+    
+    if (specialtySelect && surgerySelect) {
+        specialtySelect.addEventListener('change', function() {
+            const selectedSpecialtyId = this.value;
+            const options = surgerySelect.querySelectorAll('option');
+            const optgroups = surgerySelect.querySelectorAll('optgroup');
+            
+            if (selectedSpecialtyId === '') {
+                // Show all surgeries if no specialty selected
+                options.forEach(opt => opt.style.display = '');
+                optgroups.forEach(grp => grp.style.display = '');
+            } else {
+                // Hide all first
+                options.forEach(opt => opt.style.display = 'none');
+                optgroups.forEach(grp => grp.style.display = 'none');
+                
+                // Show only matching specialty surgeries
+                options.forEach(opt => {
+                    if (opt.dataset.specialtyId == selectedSpecialtyId) {
+                        opt.style.display = '';
+                        // Show the parent optgroup
+                        const parent = opt.closest('optgroup');
+                        if (parent) parent.style.display = '';
+                    }
+                });
+            }
+            
+            // Clear selections when specialty changes
+            Array.from(surgerySelect.selectedOptions).forEach(opt => {
+                opt.selected = false;
+            });
+        });
+    }
 });
 
 // Form validation

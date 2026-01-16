@@ -99,13 +99,26 @@ class PatientController extends BaseController {
         
         // Load lookup data
         $comorbidities = $this->getLookupData('lookup_comorbidities');
-        $surgeries = $this->getLookupData('lookup_surgeries');
         $physicians = $this->getPhysiciansForForm();
+        
+        // Load specialties and surgeries with relationships
+        $specialtyModel = new \Models\LookupSpecialty();
+        $surgeryModel = new \Models\LookupSurgery();
+        
+        // Format specialties as key-value array for dropdown
+        $specialtiesRaw = $specialtyModel->getActive();
+        $specialities = []; // Note: keeping 'ies' spelling to match view
+        foreach ($specialtiesRaw as $specialty) {
+            $specialities[$specialty['id']] = $specialty['name'];
+        }
+        
+        // Get all active surgeries with specialty info
+        $surgeries = $surgeryModel->getActiveWithSpecialty();
         
         $this->view('patients.create', [
             'comorbidities' => $comorbidities,
-            'surgeries' => $surgeries,
-            'specialities' => $this->getSpecialities(),
+            'specialities' => $specialities,  // Key-value array
+            'surgeries' => $surgeries,        // Array of objects with specialty_name
             'attendings' => $physicians['attendings'],
             'residents' => $physicians['residents']
         ]);
@@ -227,14 +240,27 @@ class PatientController extends BaseController {
         $patient['residents'] = $patientWithPhysicians['residents'] ?? [];
         
         $comorbidities = $this->getLookupData('lookup_comorbidities');
-        $surgeries = $this->getLookupData('lookup_surgeries');
         $physicians = $this->getPhysiciansForForm();
+        
+        // Load specialties and surgeries with relationships
+        $specialtyModel = new \Models\LookupSpecialty();
+        $surgeryModel = new \Models\LookupSurgery();
+        
+        // Format specialties as key-value array for dropdown
+        $specialtiesRaw = $specialtyModel->getActive();
+        $specialities = []; // Note: keeping 'ies' spelling to match view
+        foreach ($specialtiesRaw as $specialty) {
+            $specialities[$specialty['id']] = $specialty['name'];
+        }
+        
+        // Get all active surgeries with specialty info
+        $surgeries = $surgeryModel->getActiveWithSpecialty();
         
         $this->view('patients.edit', [
             'patient' => $patient,
             'comorbidities' => $comorbidities,
-            'surgeries' => $surgeries,
-            'specialities' => $this->getSpecialities(),
+            'specialities' => $specialities,  // Key-value array
+            'surgeries' => $surgeries,        // Array of objects with specialty_name
             'attendings' => $physicians['attendings'],
             'residents' => $physicians['residents']
         ]);
@@ -379,8 +405,15 @@ class PatientController extends BaseController {
      * Get lookup data
      */
     private function getLookupData($table) {
-        $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY sort_order, name");
-        return $stmt->fetchAll();
+        // Try to order by sort_order if it exists, otherwise just by name
+        try {
+            $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY sort_order, name");
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            // Fallback if sort_order column doesn't exist
+            $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY name");
+            return $stmt->fetchAll();
+        }
     }
     
     /**

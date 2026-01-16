@@ -74,11 +74,13 @@ class CatheterController extends BaseController {
         
         // Load lookup data
         $redFlags = $this->getLookupData('lookup_red_flags');
+        $catheterIndications = $this->getLookupData('lookup_catheter_indications');
         
         $this->view('catheters.create', [
             'patients' => $patients,
             'selectedPatient' => $selectedPatient,
             'redFlags' => $redFlags,
+            'catheterIndications' => $catheterIndications,
             'catheterTypes' => Catheter::getCatheterTypes(),
             'categories' => Catheter::getCategoryNames()
         ]);
@@ -187,11 +189,13 @@ class CatheterController extends BaseController {
         // Load patients and lookup data
         $patients = $this->patientModel->all();
         $redFlags = $this->getLookupData('lookup_red_flags');
+        $catheterIndications = $this->getLookupData('lookup_catheter_indications');
         
         $this->view('catheters.edit', [
             'catheter' => $catheter,
             'patients' => $patients,
             'redFlags' => $redFlags,
+            'catheterIndications' => $catheterIndications,
             'catheterTypes' => Catheter::getCatheterTypes(),
             'categories' => Catheter::getCategoryNames()
         ]);
@@ -285,10 +289,14 @@ class CatheterController extends BaseController {
         $today = new \DateTime();
         $catheterDays = $today->diff($insertionDate)->days;
         
+        // Load removal indications from database
+        $indicationModel = new \Models\LookupRemovalIndication();
+        $indications = $indicationModel->getActive();
+        
         $this->view('catheters.remove', [
             'catheter' => $catheter,
             'catheterDays' => $catheterDays,
-            'indications' => \Models\CatheterRemoval::getIndicationNames()
+            'indications' => $indications
         ]);
     }
     
@@ -502,7 +510,15 @@ class CatheterController extends BaseController {
      * Get lookup data
      */
     private function getLookupData($table) {
-        $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY severity DESC, name");
+        // Check if table has severity column (for red_flags, sentinel_events)
+        $orderBy = "name";
+        if ($table === 'lookup_red_flags' || $table === 'lookup_sentinel_events') {
+            $orderBy = "severity DESC, name";
+        } elseif ($table === 'lookup_catheter_indications') {
+            $orderBy = "sort_order ASC, name";
+        }
+        
+        $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY {$orderBy}");
         return $stmt->fetchAll();
     }
     
