@@ -80,33 +80,35 @@ ls -lh $BACKUP_DIR/
 **IMPORTANT:** Download the `aps.sbvu.ac.in` branch (NOT the v1.2.0 tag!)  
 The production branch includes `.env.production.sbvu` with your credentials and Cloudron-specific files.
 
+**Note:** The branch name contains dots which causes issues with GitHub's archive system.  
+**Solution:** Use `git clone` method (faster and more reliable).
+
 ```bash
-# Download production branch (aps.sbvu.ac.in)
+# Clone the production branch
 cd /tmp
-wget https://github.com/drjagan/acute-pain-service/archive/refs/heads/aps.sbvu.ac.in.zip
+git clone --branch aps.sbvu.ac.in --depth 1 https://github.com/drjagan/acute-pain-service.git
 
-# Verify download
-ls -lh aps.sbvu.ac.in.zip
-# Should show file size (e.g., 3-4 MB)
+# Navigate into the cloned directory
+cd acute-pain-service
 
-# Extract archive
-unzip aps.sbvu.ac.in.zip
+# Verify you have production files
+ls -la .env.production.sbvu
+# Should show the file exists
 
-# Verify extraction
-ls -l acute-pain-service-aps.sbvu.ac.in/
-# Should show directories: src/, config/, documentation/, etc.
-# IMPORTANT: Should also see .env.production.sbvu file!
+ls -la CLOUDRON_DEPLOYMENT_GUIDE.md
+# Should exist
 
-# Rename for easier handling
-mv acute-pain-service-aps.sbvu.ac.in acute-pain-service-production
+# You now have all files from aps.sbvu.ac.in branch ready!
 ```
+
+**Alternative methods:** See `DOWNLOAD_PRODUCTION_BRANCH.md` if git is not available.
 
 ---
 
 ### Step 5: Copy New Files to /app/data
 
 ```bash
-cd /tmp/acute-pain-service-production
+cd /tmp/acute-pain-service
 
 # Copy source code
 cp -r src /app/data/
@@ -309,12 +311,11 @@ chmod 600 .env
 ### Step 12: Clean Up
 
 ```bash
-# Remove downloaded files
-rm -rf /tmp/acute-pain-service-1.2.0
-rm /tmp/v1.2.0.tar.gz
+# Remove cloned repository
+rm -rf /tmp/acute-pain-service
 
 # Verify cleanup
-ls /tmp/*.tar.gz 2>/dev/null || echo "Cleanup successful"
+ls /tmp/acute-pain-service 2>/dev/null || echo "Cleanup successful"
 ```
 
 ---
