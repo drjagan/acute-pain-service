@@ -11,7 +11,21 @@ class Session {
      */
     public static function start() {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            // Set custom session save path if default is not writable (common on XAMPP/localhost)
+            // Must be set before session_start()
+            $defaultPath = session_save_path();
+            if (empty($defaultPath) || !is_writable($defaultPath)) {
+                $customPath = dirname(__DIR__, 2) . '/storage/sessions';
+                if (!is_dir($customPath)) {
+                    @mkdir($customPath, 0777, true);
+                }
+                if (is_writable($customPath)) {
+                    @session_save_path($customPath);
+                }
+            }
+            
+            // Suppress warnings for session start (handles permission issues gracefully)
+            @session_start();
             
             // Check session timeout
             if (isset($_SESSION['last_activity'])) {
