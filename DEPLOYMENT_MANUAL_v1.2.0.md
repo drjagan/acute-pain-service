@@ -77,21 +77,28 @@ ls -lh $BACKUP_DIR/
 
 ### Step 4: Download v1.2.0 from GitHub
 
+**IMPORTANT:** Download the `aps.sbvu.ac.in` branch (NOT the v1.2.0 tag!)  
+The production branch includes `.env.production.sbvu` with your credentials and Cloudron-specific files.
+
 ```bash
-# Download release package
+# Download production branch (aps.sbvu.ac.in)
 cd /tmp
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.2.0.tar.gz
+wget https://github.com/drjagan/acute-pain-service/archive/refs/heads/aps.sbvu.ac.in.zip
 
 # Verify download
-ls -lh v1.2.0.tar.gz
-# Should show file size (e.g., 2-3 MB)
+ls -lh aps.sbvu.ac.in.zip
+# Should show file size (e.g., 3-4 MB)
 
 # Extract archive
-tar -xzf v1.2.0.tar.gz
+unzip aps.sbvu.ac.in.zip
 
 # Verify extraction
-ls -l acute-pain-service-1.2.0/
+ls -l acute-pain-service-aps.sbvu.ac.in/
 # Should show directories: src/, config/, documentation/, etc.
+# IMPORTANT: Should also see .env.production.sbvu file!
+
+# Rename for easier handling
+mv acute-pain-service-aps.sbvu.ac.in acute-pain-service-production
 ```
 
 ---
@@ -99,14 +106,13 @@ ls -l acute-pain-service-1.2.0/
 ### Step 5: Copy New Files to /app/data
 
 ```bash
-cd /tmp/acute-pain-service-1.2.0
+cd /tmp/acute-pain-service-production
 
 # Copy source code
 cp -r src /app/data/
 
-# Copy config files (but DON'T overwrite .env!)
-cp config/masterdata.php /app/data/config/
-# Note: We're NOT copying config.php to preserve production settings
+# Copy config files
+cp -r config /app/data/
 
 # Copy documentation
 cp -r documentation /app/data/
@@ -114,11 +120,15 @@ cp -r documentation /app/data/
 # Copy VERSION file
 cp VERSION /app/data/
 
-# Copy storage structure (if needed)
+# Copy storage structure
 cp -r storage /app/data/ 2>/dev/null || mkdir -p /app/data/storage/sessions
 
-# Make sure .env is intact (CRITICAL!)
+# IMPORTANT: Set up .env from production template
+cp .env.production.sbvu /app/data/.env
+
+# Verify .env was created
 ls -la /app/data/.env
+# Should show file with 600 permissions
 ```
 
 ---
