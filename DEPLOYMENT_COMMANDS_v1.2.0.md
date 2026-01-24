@@ -53,7 +53,7 @@ cat VERSION
 ```bash
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/migrations/013_create_new_lookup_tables.sql
+  a916f81cc97ef00e < src/Database/migrations/013_create_new_lookup_tables.sql
 ```
 
 **Verify:**
@@ -73,7 +73,7 @@ mysql -h mysql -u a916f81cc97ef00e \
 ```bash
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/migrations/014_update_surgeries_with_specialties.sql
+  a916f81cc97ef00e < src/Database/migrations/014_update_surgeries_with_specialties.sql
 ```
 
 **Verify:**
@@ -88,12 +88,12 @@ mysql -h mysql -u a916f81cc97ef00e \
 ### 9. Seed Master Data (Optional but Recommended)
 ```bash
 # Check if seeder exists
-ls -la database/seeders/MasterDataSeeder.sql
+ls -la src/Database/seeders/MasterDataSeeder.sql
 
 # Run seeder
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/seeders/MasterDataSeeder.sql
+  a916f81cc97ef00e < src/Database/seeders/MasterDataSeeder.sql
 ```
 
 **Verify data counts:**

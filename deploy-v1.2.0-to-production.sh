@@ -100,11 +100,11 @@ pre_deployment_checks() {
     fi
     
     # Check migration files exist
-    if [ ! -f "database/migrations/013_create_new_lookup_tables.sql" ]; then
+    if [ ! -f "src/Database/migrations/013_create_new_lookup_tables.sql" ]; then
         print_error "Migration 013 not found"
         exit 1
     fi
-    if [ ! -f "database/migrations/014_update_surgeries_with_specialties.sql" ]; then
+    if [ ! -f "src/Database/migrations/014_update_surgeries_with_specialties.sql" ]; then
         print_error "Migration 014 not found"
         exit 1
     fi
@@ -232,7 +232,7 @@ STEP 7: RUN DATABASE MIGRATIONS
 # Migration 013: Create new lookup tables
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/migrations/013_create_new_lookup_tables.sql
+  a916f81cc97ef00e < src/Database/migrations/013_create_new_lookup_tables.sql
 
 # Verify new tables created
 mysql -h mysql -u a916f81cc97ef00e \
@@ -242,7 +242,7 @@ mysql -h mysql -u a916f81cc97ef00e \
 # Migration 014: Update surgeries with specialties
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/migrations/014_update_surgeries_with_specialties.sql
+  a916f81cc97ef00e < src/Database/migrations/014_update_surgeries_with_specialties.sql
 
 # Verify specialty_id column added
 mysql -h mysql -u a916f81cc97ef00e \
@@ -256,12 +256,12 @@ STEP 8: SEED MASTER DATA (OPTIONAL BUT RECOMMENDED)
 ═══════════════════════════════════════════════════════════════════════════
 
 # Check if seeder file exists
-ls -la database/seeders/MasterDataSeeder.sql
+ls -la src/Database/seeders/MasterDataSeeder.sql
 
 # Run seeder (this will populate all lookup tables with sample data)
 mysql -h mysql -u a916f81cc97ef00e \
   -p33050ba714a937bf69970570779e802c33b9faa11e4864d4 \
-  a916f81cc97ef00e < database/seeders/MasterDataSeeder.sql
+  a916f81cc97ef00e < src/Database/seeders/MasterDataSeeder.sql
 
 # Verify data inserted
 mysql -h mysql -u a916f81cc97ef00e \
@@ -401,8 +401,8 @@ mysql -h mysql -u a916f81cc97ef00e \
 └───────────────────────────────────────────────────────────────────────────┘
 App Code:     /app/code
 App Data:     /app/data
-Migrations:   /app/code/database/migrations
-Seeders:      /app/code/database/seeders
+Migrations:   /app/code/src/Database/migrations
+Seeders:      /app/code/src/Database/seeders
 Backups:      /app/data/backups
 
 ┌───────────────────────────────────────────────────────────────────────────┐
