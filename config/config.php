@@ -5,9 +5,9 @@
  */
 
 // Application Settings
-define('APP_NAME', 'Acute Pain Service Portal');
-define('APP_VERSION', '1.0.0');
-define('APP_ENV', 'development'); // development, production
+define('APP_NAME', getenv('APP_NAME') ?: 'Acute Pain Service Portal');
+define('APP_VERSION', getenv('APP_VERSION') ?: '1.2.0');
+define('APP_ENV', getenv('APP_ENV') ?: 'development'); // development, production
 
 // Paths
 define('ROOT_PATH', dirname(__DIR__));
