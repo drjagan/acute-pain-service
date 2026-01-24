@@ -1,6 +1,6 @@
 # Acute Pain Service - Documentation Index
 
-Complete documentation for the Acute Pain Service Management System v1.1.3
+Complete documentation for the Acute Pain Service Management System v1.2.0
 
 ---
 
@@ -67,27 +67,32 @@ Database setup, import, and troubleshooting.
 Version history, release notes, and changelogs.
 
 - **[CHANGELOG.md](releases/CHANGELOG.md)** - Complete version history
-- **[RELEASE_NOTES_v1.1.3.md](releases/RELEASE_NOTES_v1.1.3.md)** - Latest release (v1.1.3)
+- **[RELEASE_NOTES_v1.2.0.md](releases/RELEASE_NOTES_v1.2.0.md)** - Latest release (v1.2.0) ⭐ NEW
+- **[RELEASE_NOTES_v1.1.3.md](releases/RELEASE_NOTES_v1.1.3.md)** - v1.1.3 release notes
 - **[RELEASE_NOTES_v1.1.2.md](releases/RELEASE_NOTES_v1.1.2.md)** - v1.1.2 release notes
 - **[RELEASE_NOTES_v1.1.1.md](releases/RELEASE_NOTES_v1.1.1.md)** - v1.1.1 release notes
 - **[RELEASE_NOTES.md](releases/RELEASE_NOTES.md)** - v1.1.0 release notes
 - **[GITHUB_RELEASE_INSTRUCTIONS.md](releases/GITHUB_RELEASE_INSTRUCTIONS.md)** - How to create releases
 
-**Current Version:** v1.1.3  
-**Release Date:** 2026-01-12  
+**Current Version:** v1.2.0  
+**Release Date:** 2026-01-16  
 **Download:** [GitHub Releases](https://github.com/drjagan/acute-pain-service/releases)
 
-**What's New in v1.1.3:**
-- SQL export file for PhpMyAdmin (2-minute setup)
-- Installation wizard debugging and logging
-- Fixed hardcoded database credentials
-- Comprehensive troubleshooting documentation
+**What's New in v1.2.0:**
+- Master Data Management System (9 data types with full CRUD)
+- Drag & drop reordering for lookup data
+- Specialty-based surgery filtering in patient forms
+- CSV export for all master data types
+- 4 new database tables, 5 enhanced tables
+- Comprehensive coding standards and system documentation
+- Codebase cleanup (175KB freed, better organization)
 
 ---
 
 ### 🔧 Troubleshooting
 Common issues, errors, and their solutions.
 
+- **[MASTER_DATA_FIXES.md](troubleshooting/MASTER_DATA_FIXES.md)** - Master data system bug fixes (v1.2.0) ⭐ NEW
 - **[HEADER_FIX.md](troubleshooting/HEADER_FIX.md)** - "Headers already sent" error fix
 - **[SQL_CONSTRAINT_FIX.md](troubleshooting/SQL_CONSTRAINT_FIX.md)** - PhpMyAdmin import error fix
 - **[STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md)** - Step 3 false success message fix
@@ -96,6 +101,11 @@ Common issues, errors, and their solutions.
 **Common Issues:**
 | Issue | Solution | Document |
 |-------|----------|----------|
+| **v1.2.0 Specific:** |
+| Drag & drop not working | Browser compatibility, clear cache | [MASTER_DATA_FIXES.md](troubleshooting/MASTER_DATA_FIXES.md) |
+| Duplicate entry errors | Try-catch handling implemented | [MASTER_DATA_FIXES.md](troubleshooting/MASTER_DATA_FIXES.md) |
+| Specialty filtering not working | Check specialty_id FK exists | [MASTER_DATA_FIXES.md](troubleshooting/MASTER_DATA_FIXES.md) |
+| **General Issues:** |
 | Lookup tables not found error | Run fix script or create manually | [LOOKUP_TABLES_FIX.md](troubleshooting/LOOKUP_TABLES_FIX.md) |
 | Step 3 shows success but no tables | Logic operator fix applied | [STEP3_LOGIC_FIX.md](troubleshooting/STEP3_LOGIC_FIX.md) |
 | "Headers already sent" error | Output buffering fix applied | [HEADER_FIX.md](troubleshooting/HEADER_FIX.md) |
@@ -109,14 +119,19 @@ Common issues, errors, and their solutions.
 ### 👨‍💻 Development
 Internal documentation, testing guides, and development notes.
 
+- **[CODING_STANDARDS.md](development/CODING_STANDARDS.md)** - PSR-12 standards, security guidelines, patterns ⭐ NEW
+- **[MASTER_DATA_SYSTEM.md](development/MASTER_DATA_SYSTEM.md)** - Master data implementation guide ⭐ NEW
 - **[TESTING_GUIDE_v1.1.md](development/TESTING_GUIDE_v1.1.md)** - Testing procedures for v1.1
 - **[SELECT2_PATIENT_COMPONENT.md](development/SELECT2_PATIENT_COMPONENT.md)** - Patient selector component
+- **[CONCURRENT_EDITING_PROTECTION.md](development/CONCURRENT_EDITING_PROTECTION.md)** - Optimistic locking (planned v1.3.0)
 - **[COMPLETION_SUMMARY.md](development/COMPLETION_SUMMARY.md)** - v1.1.2 completion summary
 - **[NEXT_STEPS.md](development/NEXT_STEPS.md)** - Next development steps
 - **[PUBLIC_REPO_UPDATE.md](development/PUBLIC_REPO_UPDATE.md)** - Public repository changes
 
 **For Developers:**
 - [Development Setup](installation/INSTALL.md)
+- [Coding Standards](development/CODING_STANDARDS.md) - **NEW**
+- [Master Data System Guide](development/MASTER_DATA_SYSTEM.md) - **NEW**
 - [Testing Guide](development/TESTING_GUIDE_v1.1.md)
 - [Contributing Guidelines](../README.md#contributing) (if available)
 

@@ -1,7 +1,7 @@
 # Acute Pain Service (APS) Management System
 
-**Version:** 1.1.2  
-**Release Date:** January 2026  
+**Version:** 1.2.0  
+**Release Date:** January 16, 2026  
 **License:** MIT
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://www.php.net/)
@@ -47,6 +47,17 @@ The **Acute Pain Service Management System** is a comprehensive web-based applic
 - **Optimized Layouts** - Proper responsive breakpoints for all devices
 - **Touch-Friendly** - Enhanced mobile interaction patterns
 
+### 🎯 Master Data Management (v1.2.0)
+- **Centralized Admin Interface** - Manage all lookup data from one dashboard
+- **9 Data Types** - Catheter indications, removal indications, sentinel events, specialties, surgeries, drugs, adjuvants, comorbidities, red flags
+- **CRUD Operations** - Create, read, update, delete with validation
+- **Drag & Drop Reordering** - Intuitive sort order management
+- **Search & Pagination** - Handle large datasets efficiently
+- **CSV Export** - Download data for analysis
+- **Active/Inactive Toggle** - Enable/disable entries without deletion
+- **Soft Delete** - Recover deleted entries
+- **Specialty-Based Filtering** - Surgery list auto-filters by specialty
+
 ---
 
 ## 🎯 System Requirements
@@ -83,9 +94,9 @@ For production deployment on a LAMP server:
 
 ```bash
 # Download latest release
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.1.2.tar.gz
-tar -xzf v1.1.2.tar.gz
-cd acute-pain-service-1.1.2
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.2.0.tar.gz
+tar -xzf v1.2.0.tar.gz
+cd acute-pain-service-1.2.0
 
 # Run automated installation
 sudo chmod +x deployment/scripts/install.sh
