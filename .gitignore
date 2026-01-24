@@ -42,12 +42,11 @@ _ide_helper.php
 
 # OS Files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+**/.DS_Store
+
+# Archive folder
+_archive/
 desktop.ini
 
 # Composer
