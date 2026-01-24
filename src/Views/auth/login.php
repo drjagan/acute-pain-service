@@ -30,13 +30,3 @@
         </form>
     </div>
 </div>
-
-<div class="mt-3 p-3 bg-info bg-opacity-10 rounded">
-    <h6 class="mb-2">Test Credentials (Phase 1):</h6>
-    <small>
-        <strong>Admin:</strong> admin / admin123<br>
-        <strong>Attending:</strong> dr.sharma / admin123<br>
-        <strong>Resident:</strong> dr.patel / admin123<br>
-        <strong>Nurse:</strong> nurse.kumar / admin123
-    </small>
-</div>
