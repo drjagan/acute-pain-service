@@ -1,7 +1,8 @@
--- Migration 013: Create New Lookup Tables for Master Data Management
+-- Migration 013: Create New Lookup Tables for Master Data Management (FIXED)
 -- Version: 1.2.0
 -- Description: Creates new lookup tables for catheter indications, removal indications, 
 --              sentinel events, and specialties
+-- FIX: Removed IF NOT EXISTS from ALTER TABLE ADD COLUMN (not supported in older MySQL)
 
 -- ============================================================================
 -- Catheter Insertion Indications
@@ -86,27 +87,101 @@ COMMENT='Medical and surgical specialties';
 
 -- ============================================================================
 -- Add deleted_at to existing lookup tables for soft delete support
+-- FIX: Use procedure to check if column exists before adding
 -- ============================================================================
 
--- Add deleted_at to lookup_comorbidities
-ALTER TABLE lookup_comorbidities 
-ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+DELIMITER $$
 
--- Add deleted_at to lookup_surgeries
-ALTER TABLE lookup_surgeries 
-ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+-- Procedure to add deleted_at to lookup_comorbidities
+DROP PROCEDURE IF EXISTS add_deleted_at_comorbidities$$
+CREATE PROCEDURE add_deleted_at_comorbidities()
+BEGIN
+    IF NOT EXISTS (
+        SELECT NULL FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'lookup_comorbidities'
+        AND COLUMN_NAME = 'deleted_at'
+    ) THEN
+        ALTER TABLE lookup_comorbidities 
+        ADD COLUMN deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+    END IF;
+END$$
 
--- Add deleted_at to lookup_drugs
-ALTER TABLE lookup_drugs 
-ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+-- Procedure to add deleted_at to lookup_surgeries
+DROP PROCEDURE IF EXISTS add_deleted_at_surgeries$$
+CREATE PROCEDURE add_deleted_at_surgeries()
+BEGIN
+    IF NOT EXISTS (
+        SELECT NULL FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'lookup_surgeries'
+        AND COLUMN_NAME = 'deleted_at'
+    ) THEN
+        ALTER TABLE lookup_surgeries 
+        ADD COLUMN deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+    END IF;
+END$$
 
--- Add deleted_at to lookup_adjuvants
-ALTER TABLE lookup_adjuvants 
-ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+-- Procedure to add deleted_at to lookup_drugs
+DROP PROCEDURE IF EXISTS add_deleted_at_drugs$$
+CREATE PROCEDURE add_deleted_at_drugs()
+BEGIN
+    IF NOT EXISTS (
+        SELECT NULL FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'lookup_drugs'
+        AND COLUMN_NAME = 'deleted_at'
+    ) THEN
+        ALTER TABLE lookup_drugs 
+        ADD COLUMN deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+    END IF;
+END$$
 
--- Add deleted_at to lookup_red_flags
-ALTER TABLE lookup_red_flags 
-ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+-- Procedure to add deleted_at to lookup_adjuvants
+DROP PROCEDURE IF EXISTS add_deleted_at_adjuvants$$
+CREATE PROCEDURE add_deleted_at_adjuvants()
+BEGIN
+    IF NOT EXISTS (
+        SELECT NULL FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'lookup_adjuvants'
+        AND COLUMN_NAME = 'deleted_at'
+    ) THEN
+        ALTER TABLE lookup_adjuvants 
+        ADD COLUMN deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+    END IF;
+END$$
+
+-- Procedure to add deleted_at to lookup_red_flags
+DROP PROCEDURE IF EXISTS add_deleted_at_red_flags$$
+CREATE PROCEDURE add_deleted_at_red_flags()
+BEGIN
+    IF NOT EXISTS (
+        SELECT NULL FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'lookup_red_flags'
+        AND COLUMN_NAME = 'deleted_at'
+    ) THEN
+        ALTER TABLE lookup_red_flags 
+        ADD COLUMN deleted_at DATETIME NULL COMMENT 'Soft delete timestamp' AFTER updated_at;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Execute procedures
+CALL add_deleted_at_comorbidities();
+CALL add_deleted_at_surgeries();
+CALL add_deleted_at_drugs();
+CALL add_deleted_at_adjuvants();
+CALL add_deleted_at_red_flags();
+
+-- Drop procedures after execution
+DROP PROCEDURE IF EXISTS add_deleted_at_comorbidities;
+DROP PROCEDURE IF EXISTS add_deleted_at_surgeries;
+DROP PROCEDURE IF EXISTS add_deleted_at_drugs;
+DROP PROCEDURE IF EXISTS add_deleted_at_adjuvants;
+DROP PROCEDURE IF EXISTS add_deleted_at_red_flags;
 
 -- ============================================================================
 -- Initial Seed Data
