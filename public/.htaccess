@@ -1,83 +1,38 @@
-# Acute Pain Service - Apache Configuration
-# Cloudron Production Deployment
-
-# Enable Rewrite Engine
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
-    
-    # Force HTTPS (Cloudron handles this, but keep as backup)
-    RewriteCond %{HTTPS} !=on
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-    
-    # Redirect Trailing Slashes If Not A Folder
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Remove trailing slash from non-directories (but not masterdata routes)
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteCond %{REQUEST_URI} !^/masterdata/
     RewriteRule ^ %1 [L,R=301]
+
+    # Add trailing slash to directories (but not masterdata routes)
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_URI} !(.+)/$
+    RewriteCond %{REQUEST_URI} !^/masterdata/
+    RewriteRule ^(.*)$ $1/ [L,R=301]
+
+    # Masterdata routes - route to appropriate wrapper index.php
+    # Pattern: /masterdata/{action}/{type}/{id}/ -> /masterdata/{action}/{type}/index.php
+    RewriteCond %{REQUEST_URI} ^/masterdata/(edit|update|delete|toggleActive)/([^/]+)/(\d+)/?$
+    RewriteRule ^masterdata/(edit|update|delete|toggleActive)/([^/]+)/\d+/?$ masterdata/$1/$2/index.php [L]
     
-    # Handle Front Controller
+    # Pattern: /masterdata/{action}/{type}/ -> /masterdata/{action}/{type}/index.php
+    RewriteCond %{REQUEST_URI} ^/masterdata/(list|create|store)/([^/]+)/?$
+    RewriteRule ^masterdata/(list|create|store)/([^/]+)/?$ masterdata/$1/$2/index.php [L]
+    
+    # Handle Front Controller - Preserve REQUEST_URI (exclude masterdata)
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-
-# Disable Directory Browsing
-Options -Indexes
-
-# Security Headers
-<IfModule mod_headers.c>
-    # Prevent clickjacking
-    Header always set X-Frame-Options "SAMEORIGIN"
-    
-    # XSS Protection
-    Header always set X-XSS-Protection "1; mode=block"
-    
-    # Prevent MIME type sniffing
-    Header always set X-Content-Type-Options "nosniff"
-    
-    # Referrer Policy
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    
-    # Remove server signature
-    Header unset Server
-    Header unset X-Powered-By
-</IfModule>
-
-# PHP Settings
-<IfModule mod_php.c>
-    php_value upload_max_filesize 10M
-    php_value post_max_size 10M
-    php_value max_execution_time 300
-    php_value max_input_time 300
-    php_value memory_limit 256M
-    
-    # Enable error logging for debugging
-    php_flag display_errors Off
-    php_flag log_errors On
-    php_value error_log /app/data/logs/php-errors.log
-    php_value error_reporting E_ALL
-</IfModule>
-
-# Protect sensitive files
-<FilesMatch "(^\.env|^\.git|composer\.(json|lock)|package\.json)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Cache static assets
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-</IfModule>
-
-# Compress text files
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+    RewriteCond %{REQUEST_URI} !^/masterdata/
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 </IfModule>
