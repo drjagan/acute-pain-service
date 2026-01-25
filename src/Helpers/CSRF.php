@@ -10,9 +10,8 @@ class CSRF {
      * Generate CSRF token
      */
     public static function generate() {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
+        // Ensure session is started properly
+        Session::start();
         
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -32,9 +31,8 @@ class CSRF {
      * Validate CSRF token
      */
     public static function validate($token) {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
+        // Ensure session is started properly
+        Session::start();
         
         if (!isset($_SESSION['csrf_token'])) {
             return false;
