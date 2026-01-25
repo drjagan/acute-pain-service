@@ -53,6 +53,7 @@ Thumbs.db
 
 # Archive folder
 _archive/
+.archive/
 desktop.ini
 
 # Composer

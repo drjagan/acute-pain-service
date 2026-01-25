@@ -1,7 +1,7 @@
 # Acute Pain Service (APS) Management System
 
-**Version:** 1.2.0  
-**Release Date:** January 16, 2026  
+**Version:** 1.2.1  
+**Release Date:** January 25, 2026  
 **License:** MIT
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://www.php.net/)
@@ -86,6 +86,22 @@ The **Acute Pain Service Management System** is a comprehensive web-based applic
 
 ---
 
+## 🔔 What's New in v1.2.1 (January 25, 2026)
+
+### Bug Fixes
+- ✅ **CSRF Token Validation** - Fixed session initialization in CSRF protection
+- ✅ **Toggle Active Status** - Fixed string/int handling in database toggle operations  
+- ✅ **Form Labels** - Fixed singular/plural naming in Master Data forms
+- ✅ **Cloudron Compatibility** - Added wrapper files and routing for Cloudron LAMP stack
+
+### Deployment Notes
+- **Main Branch**: Use for standard Apache/Nginx deployments
+- **aps.sbvu.ac.in Branch**: Use for Cloudron production deployments (includes wrapper files)
+
+See [CHANGELOG.md](CHANGELOG.md) for complete version history.
+
+---
+
 ## 🚀 Installation
 
 ### Quick Start (Production Server)
@@ -94,9 +110,9 @@ For production deployment on a LAMP server:
 
 ```bash
 # Download latest release
-wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.2.0.tar.gz
-tar -xzf v1.2.0.tar.gz
-cd acute-pain-service-1.2.0
+wget https://github.com/drjagan/acute-pain-service/archive/refs/tags/v1.2.1.tar.gz
+tar -xzf v1.2.1.tar.gz
+cd acute-pain-service-1.2.1
 
 # Run automated installation
 sudo chmod +x deployment/scripts/install.sh
