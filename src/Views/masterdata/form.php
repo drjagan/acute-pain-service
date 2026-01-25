@@ -16,7 +16,7 @@ $formAction = $isEdit
     <div>
         <h1 class="h2">
             <i class="<?= $config['icon'] ?>"></i> 
-            <?= $isEdit ? 'Edit' : 'Add New' ?> <?= e(rtrim($config['label'], 's')) ?>
+            <?= $isEdit ? 'Edit' : 'Add New' ?> <?= e($config['singular'] ?? rtrim($config['label'], 'ies') . 'y') ?>
         </h1>
         <p class="text-muted mb-0"><?= e($config['description']) ?></p>
     </div>

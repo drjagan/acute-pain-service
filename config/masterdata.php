@@ -13,6 +13,7 @@
 return [
     'catheter_indications' => [
         'label' => 'Catheter Insertion Indications',
+        'singular' => 'Catheter Insertion Indication',
         'description' => 'Reasons for catheter insertion',
         'icon' => 'bi-clipboard-pulse',
         'table' => 'lookup_catheter_indications',
@@ -61,6 +62,7 @@ return [
     
     'removal_indications' => [
         'label' => 'Catheter Removal Indications',
+        'singular' => 'Catheter Removal Indication',
         'description' => 'Reasons for catheter removal',
         'icon' => 'bi-x-circle',
         'table' => 'lookup_removal_indications',
@@ -122,6 +124,7 @@ return [
     
     'sentinel_events' => [
         'label' => 'Sentinel Events',
+        'singular' => 'Sentinel Event',
         'description' => 'Adverse events and complications',
         'icon' => 'bi-exclamation-triangle',
         'table' => 'lookup_sentinel_events',
@@ -192,6 +195,7 @@ return [
     
     'specialties' => [
         'label' => 'Medical Specialties',
+        'singular' => 'Medical Specialty',
         'description' => 'Surgical and medical specialties',
         'icon' => 'bi-hospital',
         'table' => 'lookup_specialties',
@@ -244,6 +248,7 @@ return [
     
     'surgeries' => [
         'label' => 'Surgical Procedures',
+        'singular' => 'Surgical Procedure',
         'description' => 'Types of surgical procedures',
         'icon' => 'bi-bandaid',
         'table' => 'lookup_surgeries',
@@ -289,6 +294,7 @@ return [
     
     'comorbidities' => [
         'label' => 'Comorbidities',
+        'singular' => 'Comorbidity',
         'description' => 'Patient medical conditions',
         'icon' => 'bi-heart-pulse',
         'table' => 'lookup_comorbidities',
@@ -329,6 +335,7 @@ return [
     
     'drugs' => [
         'label' => 'Drugs',
+        'singular' => 'Drug',
         'description' => 'Medications and drugs',
         'icon' => 'bi-capsule',
         'table' => 'lookup_drugs',
@@ -383,6 +390,7 @@ return [
     
     'adjuvants' => [
         'label' => 'Adjuvants',
+        'singular' => 'Adjuvant',
         'description' => 'Drug adjuvants and additives',
         'icon' => 'bi-plus-circle',
         'table' => 'lookup_adjuvants',
@@ -423,6 +431,7 @@ return [
     
     'red_flags' => [
         'label' => 'Red Flags',
+        'singular' => 'Red Flag',
         'description' => 'Insertion complications',
         'icon' => 'bi-flag',
         'table' => 'lookup_red_flags',
