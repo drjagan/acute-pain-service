@@ -122,7 +122,8 @@ abstract class BaseLookupModel extends BaseModel {
             return false;
         }
         
-        $newStatus = !$record['active'];
+        // Convert to int and toggle (handles both string and int values)
+        $newStatus = ((int)$record['active']) === 1 ? 0 : 1;
         return $this->update($id, ['active' => $newStatus]);
     }
     
