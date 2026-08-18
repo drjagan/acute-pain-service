@@ -129,6 +129,10 @@ $migrations = [
         'name' => '014_update_surgeries_with_specialties.sql'
     ],
     [
+        'file' => 'src/Database/migrations/015_update_catheter_removal_indication_to_master_code.sql',
+        'name' => '015_update_catheter_removal_indication_to_master_code.sql'
+    ],
+    [
         'file' => 'src/Database/seeders/MasterDataSeeder.sql',
         'name' => 'MasterDataSeeder.sql'
     ]

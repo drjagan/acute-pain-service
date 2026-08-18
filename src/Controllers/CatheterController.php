@@ -376,7 +376,7 @@ class CatheterController extends BaseController {
         
         $this->view('catheters.viewRemoval', [
             'removal' => $removal,
-            'indications' => \Models\CatheterRemoval::getIndicationNames()
+            'indications' => \Models\LookupRemovalIndication::getIndicationNames()
         ]);
     }
     
@@ -418,6 +418,14 @@ class CatheterController extends BaseController {
             }
         }
 
+        $removalIndication = null;
+        if ($this->hasSubmittedValue($data, 'indication')) {
+            $removalIndication = $this->findActiveRemovalIndicationByCode((string)$data['indication']);
+            if (!$removalIndication) {
+                $errors[] = 'Invalid removal indication selected';
+            }
+        }
+
         if ($catheter && $this->hasSubmittedValue($data, 'date_of_removal')) {
             $catheterDays = $this->calculateCatheterDays(
                 $catheter['date_of_insertion'] ?? '',
@@ -429,9 +437,8 @@ class CatheterController extends BaseController {
             }
         }
         
-        // If indication is 'other', indication_notes is required
-        if (!empty($data['indication']) && $data['indication'] === 'other' && empty($data['indication_notes'])) {
-            $errors[] = 'Indication notes are required when indication is "Other"';
+        if ($removalIndication && !empty($removalIndication['requires_notes']) && !$this->hasSubmittedValue($data, 'indication_notes')) {
+            $errors[] = 'Indication notes are required for the selected indication';
         }
         
         // Validate catheter days
@@ -455,7 +462,7 @@ class CatheterController extends BaseController {
      */
     private function prepareRemovalData($data) {
         return [
-            'indication' => $data['indication'],
+            'indication' => Sanitizer::string($data['indication']),
             'indication_notes' => !empty($data['indication_notes']) ? Sanitizer::string($data['indication_notes']) : null,
             'date_of_removal' => $data['date_of_removal'],
             'number_of_catheter_days' => max(self::MIN_CATHETER_DAYS, (int)$data['number_of_catheter_days']),
@@ -464,6 +471,26 @@ class CatheterController extends BaseController {
             'final_notes' => !empty($data['final_notes']) ? Sanitizer::string($data['final_notes']) : null,
             'patient_satisfaction' => !empty($data['patient_satisfaction']) ? $data['patient_satisfaction'] : null
         ];
+    }
+
+    /**
+     * Resolve an active removal indication by master-data code.
+     */
+    private function findActiveRemovalIndicationByCode(string $code) {
+        $code = trim($code);
+        if ($code === '') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT code, name, requires_notes
+            FROM lookup_removal_indications
+            WHERE code = ? AND active = 1 AND deleted_at IS NULL
+            LIMIT 1
+        ");
+        $stmt->execute([$code]);
+
+        return $stmt->fetch();
     }
 
     /**

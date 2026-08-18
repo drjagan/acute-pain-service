@@ -335,15 +335,7 @@ CREATE TABLE IF NOT EXISTS catheter_removals (
     patient_id INT UNSIGNED NOT NULL,
     
     -- Removal Data
-    indication ENUM(
-        'adequate_analgesia',
-        'adverse_effects',
-        'patient_request',
-        'infection',
-        'catheter_displacement',
-        'surgical_completion',
-        'other'
-    ) NOT NULL,
+    indication VARCHAR(50) NOT NULL COMMENT 'lookup_removal_indications.code',
     indication_notes TEXT NULL,
     
     date_of_removal DATE NOT NULL,
