@@ -597,7 +597,7 @@ class CatheterController extends BaseController {
             $orderBy = "sort_order ASC, name";
         }
         
-        $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 ORDER BY {$orderBy}");
+        $stmt = $this->db->query("SELECT * FROM {$table} WHERE active = 1 AND deleted_at IS NULL ORDER BY {$orderBy}");
         return $stmt->fetchAll();
     }
     
