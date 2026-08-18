@@ -70,11 +70,12 @@ class PatientController extends BaseController {
             $catheterData = $stmt->fetch();
             $patient['active_catheters'] = $catheterData['active_count'];
             
-            // Get latest catheter info if exists
+            // Get latest active catheter info if exists
             $stmt = $this->db->prepare("
-                SELECT catheter_type, date_of_insertion, status
+                SELECT id, catheter_type, date_of_insertion, status
                 FROM catheters 
                 WHERE patient_id = ? 
+                AND status = 'active'
                 AND deleted_at IS NULL
                 ORDER BY created_at DESC
                 LIMIT 1

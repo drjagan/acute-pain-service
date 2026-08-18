@@ -122,8 +122,8 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <?php if ($patient['active_catheters'] > 0): ?>
-                                        <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $patient['latest_catheter']['id'] ?? '#' ?>" 
+                                    <?php if (!empty($patient['latest_catheter']['id'])): ?>
+                                        <a href="<?= BASE_URL ?>/catheters/viewCatheter/<?= $patient['latest_catheter']['id'] ?>"
                                            class="btn btn-outline-success"
                                            title="View Active Catheter">
                                             <i class="bi bi-clipboard-pulse"></i>
