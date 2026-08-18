@@ -4,6 +4,18 @@
 
 (function() {
     'use strict';
+
+    window.APS = window.APS || {};
+
+    window.APS.csrfToken = function() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    };
+
+    window.APS.csrfHeaders = function(headers = {}) {
+        const token = window.APS.csrfToken();
+        return token ? Object.assign({}, headers, { 'X-CSRF-Token': token }) : headers;
+    };
     
     /**
      * Mobile Menu Management
@@ -643,9 +655,9 @@ window.APS.Notifications = (function() {
         
         fetch(window.BASE_URL + '/notifications/markAsRead/' + notificationId, {
             method: 'POST',
-            headers: {
+            headers: window.APS.csrfHeaders({
                 'Content-Type': 'application/json'
-            }
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -667,9 +679,9 @@ window.APS.Notifications = (function() {
     function markAllAsRead() {
         fetch(window.BASE_URL + '/notifications/markAllAsRead', {
             method: 'POST',
-            headers: {
+            headers: window.APS.csrfHeaders({
                 'Content-Type': 'application/json'
-            }
+            })
         })
         .then(response => response.json())
         .then(data => {

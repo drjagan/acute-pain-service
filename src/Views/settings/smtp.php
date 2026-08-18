@@ -255,7 +255,8 @@ document.getElementById('testEmailBtn').addEventListener('click', function() {
     fetch('<?= BASE_URL ?>/settings/testSMTP', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
         },
         body: JSON.stringify({ test_email: testEmail })
     })

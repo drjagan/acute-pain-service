@@ -10,15 +10,61 @@ require_once __DIR__ . '/../config/config.php';
 // Start session
 Helpers\Session::start();
 
+/**
+ * Render the application 404 response.
+ */
+function apsRenderNotFound(): void
+{
+    http_response_code(404);
+
+    if (file_exists(VIEWS_PATH . '/errors/404.php')) {
+        include VIEWS_PATH . '/errors/404.php';
+        return;
+    }
+
+    echo "<h1>404 - Page Not Found</h1>";
+}
+
+/**
+ * Render the application 405 response.
+ */
+function apsRenderMethodNotAllowed(array $allowedMethods): void
+{
+    http_response_code(405);
+    header('Allow: ' . implode(', ', $allowedMethods));
+    echo "<h1>405 - Method Not Allowed</h1>";
+}
+
+/**
+ * Construct and invoke the matched controller action.
+ */
+function apsDispatchController(array $match): void
+{
+    $controllerName = $match['controller'];
+    $action = $match['action'];
+    $controllerClass = "Controllers\\{$controllerName}";
+    $controllerFile = SRC_PATH . "/Controllers/{$controllerName}.php";
+
+    if (!file_exists($controllerFile) || !class_exists($controllerClass)) {
+        http_response_code(404);
+        echo "Controller not found";
+        return;
+    }
+
+    $controller = new $controllerClass();
+
+    if (!is_callable([$controller, $action])) {
+        error_log("Action '$action' not callable in $controllerClass");
+        apsRenderNotFound();
+        return;
+    }
+
+    call_user_func_array([$controller, $action], $match['params']);
+}
+
 // Get request URI and method
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$method = $_SERVER['REQUEST_METHOD'];
-
-// Remove query string
-$uri = strtok($uri, '?');
-
-// Remove trailing slash
-$uri = rtrim($uri, '/');
+$uri = \Routing\Router::normalizePath($_SERVER['REQUEST_URI'] ?? '/');
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // Default route
 if (empty($uri) || $uri === '/') {
@@ -29,93 +75,18 @@ if (empty($uri) || $uri === '/') {
     }
 }
 
-// Simple router
-$routes = [
-    // Auth routes
-    'GET /auth/login' => 'AuthController@login',
-    'POST /auth/login' => 'AuthController@authenticate',
-    'GET /auth/logout' => 'AuthController@logout',
-    'GET /auth/forgot-password' => 'AuthController@forgotPassword',
-    'POST /auth/forgot-password' => 'AuthController@sendResetLink',
-    'GET /auth/reset-password' => 'AuthController@resetPassword',
-    'POST /auth/reset-password' => 'AuthController@updatePassword',
-    
-    // Dashboard
-    'GET /dashboard' => 'DashboardController@index',
-    
-    // Master Data (v1.2.0)
-    'GET /masterdata/index' => 'MasterDataController@index',
-    
-    // Patients (Screen 1)
-    'GET /patients' => 'PatientController@index',
-    'GET /patients/create' => 'PatientController@create',
-    'POST /patients/store' => 'PatientController@store',
-    'POST /patients/check-hospital-number' => 'PatientController@checkHospitalNumber',
-    // Note: /patients/viewPatient/:id, /patients/edit/:id, /patients/update/:id, /patients/delete/:id 
-    // are handled by dynamic routing below
-];
+$router = new \Routing\Router(require ROOT_PATH . '/config/routes.php');
+$match = $router->match($method, $uri);
 
-$route = $method . ' ' . $uri;
-
-// Check if route exists
-if (isset($routes[$route])) {
-    list($controllerName, $action) = explode('@', $routes[$route]);
-    
-    $controllerClass = "Controllers\\{$controllerName}";
-    $controllerFile = SRC_PATH . "/Controllers/{$controllerName}.php";
-    
-    if (file_exists($controllerFile)) {
-        $controller = new $controllerClass();
-        $controller->$action();
-    } else {
-        http_response_code(404);
-        echo "Controller not found";
-    }
-} else {
-    // Try dynamic routing for future routes
-    $parts = explode('/', trim($uri, '/'));
-    
-    if (count($parts) >= 1) {
-        // Map plural routes to singular controller names
-        $controllerMap = [
-            'patients' => 'PatientController',
-            'catheters' => 'CatheterController',
-            'regimes' => 'DrugRegimeController',
-            'outcomes' => 'FunctionalOutcomeController',
-            'reports' => 'ReportController',
-            'users' => 'UserController',
-            'notifications' => 'NotificationController',
-            'settings' => 'SettingsController',
-            'masterdata' => 'MasterDataController',
-        ];
-        
-        $controllerName = $controllerMap[$parts[0]] ?? ucfirst($parts[0]) . 'Controller';
-        $action = $parts[1] ?? 'index';
-        $params = array_slice($parts, 2);
-        
-        $controllerClass = "Controllers\\{$controllerName}";
-        $controllerFile = SRC_PATH . "/Controllers/{$controllerName}.php";
-        
-        if (file_exists($controllerFile) && class_exists($controllerClass)) {
-            $controller = new $controllerClass();
-            if (method_exists($controller, $action)) {
-                call_user_func_array([$controller, $action], $params);
-                exit;
-            } else {
-                // Debug: Method not found
-                error_log("Method '$action' not found in $controllerClass. URI: $uri");
-            }
-        } else {
-            // Debug: Controller not found
-            error_log("Controller not found: $controllerClass. File: $controllerFile. URI: $uri");
-        }
-    }
-    
-    // 404 - Not found
-    http_response_code(404);
-    if (file_exists(VIEWS_PATH . '/errors/404.php')) {
-        include VIEWS_PATH . '/errors/404.php';
-    } else {
-        echo "<h1>404 - Page Not Found</h1>";
-    }
+if ($match['status'] === 'matched') {
+    (new \Routing\ActionPolicy())->enforce($match['policy']);
+    apsDispatchController($match);
+    return;
 }
+
+if ($match['status'] === 'method_not_allowed') {
+    apsRenderMethodNotAllowed($match['allowed_methods']);
+    return;
+}
+
+apsRenderNotFound();

@@ -147,7 +147,8 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch('<?= BASE_URL ?>/notifications/markAllAsRead', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
                 }
             })
             .then(response => response.json())
@@ -174,7 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`<?= BASE_URL ?>/notifications/markAsRead/${notificationId}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
                 }
             })
             .then(response => response.json())

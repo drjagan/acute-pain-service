@@ -45,7 +45,7 @@ class CSRF {
      * Check CSRF token from request
      */
     public static function check() {
-        $token = $_POST['csrf_token'] ?? $_GET['csrf_token'] ?? '';
+        $token = self::requestToken();
         
         if (!self::validate($token)) {
             http_response_code(403);
@@ -53,6 +53,29 @@ class CSRF {
         }
         
         return true;
+    }
+
+    /**
+     * Read CSRF token from approved request locations.
+     */
+    public static function requestToken() {
+        if (!empty($_POST['csrf_token'])) {
+            return $_POST['csrf_token'];
+        }
+
+        if (!empty($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+            return $_SERVER['HTTP_X_CSRF_TOKEN'];
+        }
+
+        if (!empty($_SERVER['HTTP_X_XSRF_TOKEN'])) {
+            return $_SERVER['HTTP_X_XSRF_TOKEN'];
+        }
+
+        if (!empty($_GET['csrf_token'])) {
+            return $_GET['csrf_token'];
+        }
+
+        return '';
     }
     
     /**

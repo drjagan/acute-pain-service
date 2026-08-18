@@ -378,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
                     },
                     body: 'hospital_number=' + encodeURIComponent(value) + '&exclude_id=<?= $patient['id'] ?>'
                 });

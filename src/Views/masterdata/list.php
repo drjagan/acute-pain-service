@@ -243,7 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
                     }
                 })
                 .then(response => response.json())
@@ -344,7 +345,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': '<?= \Helpers\CSRF::token() ?>'
                         },
                         body: JSON.stringify({ order: order })
                     })
