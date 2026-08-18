@@ -124,10 +124,10 @@ class MasterDataController extends BaseController {
                 
                 if ($id) {
                     Flash::success($this->currentConfig['label'] . ' created successfully');
-                    $this->redirect("/masterdata/list/{$type}");
+                    $this->redirect("/masterdata/list/{$type}/");
                 } else {
                     Flash::error('Failed to create record');
-                    $this->redirect("/masterdata/create/{$type}");
+                    $this->redirect("/masterdata/create/{$type}/");
                 }
             } catch (\PDOException $e) {
                 // Handle duplicate entry or other database errors
@@ -136,14 +136,14 @@ class MasterDataController extends BaseController {
                 } else {
                     Flash::error('Database error: ' . $e->getMessage());
                 }
-                $this->redirect("/masterdata/create/{$type}");
+                $this->redirect("/masterdata/create/{$type}/");
             }
         } else {
             // Validation errors
             foreach ($data['errors'] as $error) {
                 Flash::error($error);
             }
-            $this->redirect("/masterdata/create/{$type}");
+            $this->redirect("/masterdata/create/{$type}/");
         }
     }
     
@@ -160,7 +160,7 @@ class MasterDataController extends BaseController {
         
         if (!$item) {
             Flash::error('Record not found');
-            $this->redirect("/masterdata/list/{$type}");
+            $this->redirect("/masterdata/list/{$type}/");
         }
         
         // Get foreign key options if needed
@@ -190,7 +190,7 @@ class MasterDataController extends BaseController {
         $existing = $this->model->find($id);
         if (!$existing) {
             Flash::error('Record not found');
-            $this->redirect("/masterdata/list/{$type}");
+            $this->redirect("/masterdata/list/{$type}/");
         }
         
         // Validate and sanitize input
@@ -203,10 +203,10 @@ class MasterDataController extends BaseController {
                 
                 if ($success) {
                     Flash::success($this->currentConfig['label'] . ' updated successfully');
-                    $this->redirect("/masterdata/list/{$type}");
+                    $this->redirect("/masterdata/list/{$type}/");
                 } else {
                     Flash::error('Failed to update record');
-                    $this->redirect("/masterdata/edit/{$type}/{$id}");
+                    $this->redirect("/masterdata/edit/{$type}/{$id}/");
                 }
             } catch (\PDOException $e) {
                 // Handle duplicate entry or other database errors
@@ -215,14 +215,14 @@ class MasterDataController extends BaseController {
                 } else {
                     Flash::error('Database error: ' . $e->getMessage());
                 }
-                $this->redirect("/masterdata/edit/{$type}/{$id}");
+                $this->redirect("/masterdata/edit/{$type}/{$id}/");
             }
         } else {
             // Validation errors
             foreach ($data['errors'] as $error) {
                 Flash::error($error);
             }
-            $this->redirect("/masterdata/edit/{$type}/{$id}");
+            $this->redirect("/masterdata/edit/{$type}/{$id}/");
         }
     }
     
@@ -244,7 +244,7 @@ class MasterDataController extends BaseController {
             Flash::error('Failed to delete record. It may have related data.');
         }
         
-        $this->redirect("/masterdata/list/{$type}");
+        $this->redirect("/masterdata/list/{$type}/");
     }
     
     /**
@@ -303,7 +303,7 @@ class MasterDataController extends BaseController {
         
         if (!$this->currentConfig['export']) {
             Flash::error('Export not supported for this data type');
-            $this->redirect("/masterdata/list/{$type}");
+            $this->redirect("/masterdata/list/{$type}/");
         }
         
         $columns = $this->currentConfig['list_columns'] ?? ['name', 'active', 'created_at'];
@@ -394,7 +394,7 @@ class MasterDataController extends BaseController {
     private function loadType($type) {
         if (!isset($this->config[$type])) {
             Flash::error('Invalid master data type');
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         $this->currentType = $type;
@@ -404,7 +404,7 @@ class MasterDataController extends BaseController {
         $modelClass = '\\Models\\' . $this->currentConfig['model'];
         if (!class_exists($modelClass)) {
             Flash::error('Model not found: ' . $modelClass);
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         $this->model = new $modelClass();
@@ -436,7 +436,7 @@ class MasterDataController extends BaseController {
             }
             
             // Skip if not required and empty
-            if (empty($value) && $value !== '0' && empty($config['required'])) {
+            if (empty($value) && $value !== '0' && $value !== 0 && empty($config['required'])) {
                 // Use default value if specified
                 if (isset($config['default'])) {
                     $values[$field] = $config['default'];
@@ -565,14 +565,14 @@ class MasterDataController extends BaseController {
         // Verify parent has children defined
         if (!isset($this->currentConfig['has_children'])) {
             Flash::error('This data type does not have child records');
-            $this->redirect("/masterdata/list/{$parentType}");
+            $this->redirect("/masterdata/list/{$parentType}/");
         }
         
         // Get parent record
         $parent = $this->model->find($parentId);
         if (!$parent) {
             Flash::error('Parent record not found');
-            $this->redirect("/masterdata/list/{$parentType}");
+            $this->redirect("/masterdata/list/{$parentType}/");
         }
         
         // Get child configuration
@@ -583,7 +583,7 @@ class MasterDataController extends BaseController {
         // Load child configuration
         if (!isset($this->config[$childType])) {
             Flash::error('Child configuration not found');
-            $this->redirect("/masterdata/list/{$parentType}");
+            $this->redirect("/masterdata/list/{$parentType}/");
         }
         
         $childConfig = $this->config[$childType];
@@ -592,7 +592,7 @@ class MasterDataController extends BaseController {
         $childModel = $this->getForeignModel($childTable);
         if (!$childModel) {
             Flash::error('Child model not found');
-            $this->redirect("/masterdata/list/{$parentType}");
+            $this->redirect("/masterdata/list/{$parentType}/");
         }
         
         // Get all children for this parent
@@ -650,7 +650,7 @@ class MasterDataController extends BaseController {
             }
         }
         
-        $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}");
+        $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}/");
     }
     
     /**
@@ -668,14 +668,14 @@ class MasterDataController extends BaseController {
         
         if (!$childModel) {
             Flash::error('Child model not found');
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         // Get current record to find parent
         $child = $childModel->find($childId);
         if (!$child) {
             Flash::error('Record not found');
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         // Update data
@@ -707,9 +707,9 @@ class MasterDataController extends BaseController {
         $parentId = $child[$parentIdField] ?? null;
         
         if ($parentType && $parentId) {
-            $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}");
+            $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}/");
         } else {
-            $this->redirect("/masterdata/index");
+            $this->redirect("/masterdata/");
         }
     }
     
@@ -728,14 +728,14 @@ class MasterDataController extends BaseController {
         
         if (!$childModel) {
             Flash::error('Child model not found');
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         // Get current record to find parent
         $child = $childModel->find($childId);
         if (!$child) {
             Flash::error('Record not found');
-            $this->redirect('/masterdata/index');
+            $this->redirect('/masterdata/');
         }
         
         // Delete
@@ -753,9 +753,9 @@ class MasterDataController extends BaseController {
         $parentId = $child[$parentIdField] ?? null;
         
         if ($parentType && $parentId) {
-            $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}");
+            $this->redirect("/masterdata/manageChildren/{$parentType}/{$parentId}/");
         } else {
-            $this->redirect("/masterdata/index");
+            $this->redirect("/masterdata/");
         }
     }
     

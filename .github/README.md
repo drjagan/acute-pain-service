@@ -252,6 +252,13 @@ This software is proprietary and confidential. Unauthorized copying, distributio
 
 ## 🙏 Acknowledgments
 
+Contributors:
+- Dr. Jagan Mohan R
+- Dr. Hemanth Kumar V R
+- Dr. Sivashanmugham
+- Dr. Charulatha
+- Mr. Arvindh Suresh Babu
+
 Built with:
 - [PHP](https://www.php.net/) - Server-side logic
 - [MySQL](https://www.mysql.com/) - Database management

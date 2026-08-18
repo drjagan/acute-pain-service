@@ -2,7 +2,7 @@
 /**
  * Manage Children View
  * For managing child records (e.g., surgeries under a specialty)
- * 
+ *
  * @version 1.2.0
  */
 ?>
@@ -11,26 +11,26 @@
     <div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-2">
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/masterdata/index">Master Data</a></li>
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/masterdata/list/<?= $parentType ?>"><?= e($parentConfig['label']) ?></a></li>
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/masterdata/">Master Data</a></li>
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/masterdata/list/<?= $parentType ?>/"><?= e($parentConfig['label']) ?></a></li>
                 <li class="breadcrumb-item active"><?= e($parent['name']) ?></li>
             </ol>
         </nav>
-        
+
         <h1 class="h2">
-            <i class="<?= $parentConfig['icon'] ?>"></i> 
+            <i class="<?= $parentConfig['icon'] ?>"></i>
             <?= e($parent['name']) ?>
             <?php if (!empty($parent['code'])): ?>
             <span class="badge bg-secondary"><?= e($parent['code']) ?></span>
             <?php endif; ?>
         </h1>
-        
+
         <?php if (!empty($parent['description'])): ?>
         <p class="text-muted mb-0"><?= e($parent['description']) ?></p>
         <?php endif; ?>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="<?= BASE_URL ?>/masterdata/list/<?= $parentType ?>" class="btn btn-sm btn-outline-secondary">
+        <a href="<?= BASE_URL ?>/masterdata/list/<?= $parentType ?>/" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Back to <?= $parentConfig['label'] ?>
         </a>
     </div>
@@ -81,16 +81,16 @@
         </h5>
     </div>
     <div class="card-body">
-        <form method="POST" action="<?= BASE_URL ?>/masterdata/storeChild/<?= $parentType ?>/<?= $parent['id'] ?>" id="childForm">
+        <form method="POST" action="<?= BASE_URL ?>/masterdata/storeChild/<?= $parentType ?>/<?= $parent['id'] ?>/" id="childForm">
             <?= \Helpers\CSRF::field() ?>
             <input type="hidden" name="<?= $foreignKey ?>" value="<?= $parent['id'] ?>">
-            
+
             <div class="row">
                 <?php foreach ($childConfig['fields'] as $fieldName => $fieldConfig): ?>
                     <?php if ($fieldName === $childConfig['parent']['key']): continue; endif; ?>
                     <?php if ($fieldName === 'sort_order'): continue; endif; ?>
                     <?php if ($fieldName === 'active'): continue; endif; ?>
-                    
+
                     <div class="col-md-<?= $fieldConfig['type'] === 'textarea' ? '12' : '6' ?> mb-3">
                         <label for="<?= $fieldName ?>" class="form-label">
                             <?= $fieldConfig['label'] ?>
@@ -98,36 +98,36 @@
                             <span class="text-danger">*</span>
                             <?php endif; ?>
                         </label>
-                        
+
                         <?php if ($fieldConfig['type'] === 'text'): ?>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="<?= $fieldName ?>" 
+                            <input type="text"
+                                   class="form-control"
+                                   id="<?= $fieldName ?>"
                                    name="<?= $fieldName ?>"
                                    placeholder="<?= $fieldConfig['placeholder'] ?? '' ?>"
                                    maxlength="<?= $fieldConfig['maxlength'] ?? '' ?>"
                                    <?= ($fieldConfig['required'] ?? false) ? 'required' : '' ?>>
-                        
+
                         <?php elseif ($fieldConfig['type'] === 'textarea'): ?>
-                            <textarea class="form-control" 
-                                      id="<?= $fieldName ?>" 
+                            <textarea class="form-control"
+                                      id="<?= $fieldName ?>"
                                       name="<?= $fieldName ?>"
                                       rows="<?= $fieldConfig['rows'] ?? 3 ?>"
                                       placeholder="<?= $fieldConfig['placeholder'] ?? '' ?>"></textarea>
-                        
+
                         <?php elseif ($fieldConfig['type'] === 'number'): ?>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="<?= $fieldName ?>" 
+                            <input type="number"
+                                   class="form-control"
+                                   id="<?= $fieldName ?>"
                                    name="<?= $fieldName ?>"
                                    step="<?= $fieldConfig['step'] ?? '1' ?>"
                                    min="<?= $fieldConfig['min'] ?? '' ?>"
                                    placeholder="<?= $fieldConfig['placeholder'] ?? '' ?>"
                                    <?= ($fieldConfig['required'] ?? false) ? 'required' : '' ?>>
-                        
+
                         <?php elseif ($fieldConfig['type'] === 'select'): ?>
-                            <select class="form-select" 
-                                    id="<?= $fieldName ?>" 
+                            <select class="form-select"
+                                    id="<?= $fieldName ?>"
                                     name="<?= $fieldName ?>"
                                     <?= ($fieldConfig['required'] ?? false) ? 'required' : '' ?>>
                                 <option value="">Select...</option>
@@ -136,14 +136,14 @@
                                 <?php endforeach; ?>
                             </select>
                         <?php endif; ?>
-                        
+
                         <?php if (!empty($fieldConfig['help'])): ?>
                         <div class="form-text"><?= $fieldConfig['help'] ?></div>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </div>
-            
+
             <div class="d-flex justify-content-end gap-2">
                 <button type="reset" class="btn btn-secondary">
                     <i class="bi bi-x-circle"></i> Clear
@@ -180,7 +180,7 @@
                             <i class="bi bi-arrows-move" title="Drag to reorder"></i>
                         </th>
                         <?php endif; ?>
-                        
+
                         <th>Name</th>
                         <th width="100" class="text-center">Status</th>
                         <th width="200" class="text-center">Actions</th>
@@ -194,16 +194,16 @@
                             <i class="bi bi-grip-vertical text-muted sortable-handle" style="cursor: move;"></i>
                         </td>
                         <?php endif; ?>
-                        
+
                         <td>
                             <strong><?= e($child['name']) ?></strong>
                             <?php if (!empty($child['description'])): ?>
                             <br><small class="text-muted"><?= e($child['description']) ?></small>
                             <?php endif; ?>
                         </td>
-                        
+
                         <td class="text-center">
-                            <button type="button" 
+                            <button type="button"
                                     class="btn btn-sm btn-<?= $child['active'] ? 'success' : 'secondary' ?> toggle-child-active"
                                     data-id="<?= $child['id'] ?>"
                                     data-active="<?= $child['active'] ?>"
@@ -212,11 +212,11 @@
                                 <?= $child['active'] ? 'Active' : 'Inactive' ?>
                             </button>
                         </td>
-                        
+
                         <td class="text-center">
                             <div class="btn-group btn-group-sm" role="group">
                                 <!-- Edit (inline modal) -->
-                                <button type="button" 
+                                <button type="button"
                                         class="btn btn-outline-primary edit-child-btn"
                                         data-id="<?= $child['id'] ?>"
                                         data-name="<?= e($child['name']) ?>"
@@ -224,14 +224,14 @@
                                         title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                
+
                                 <!-- Delete -->
-                                <form method="POST" 
-                                      action="<?= BASE_URL ?>/masterdata/deleteChild/<?= $childType ?>/<?= $child['id'] ?>" 
+                                <form method="POST"
+                                      action="<?= BASE_URL ?>/masterdata/deleteChild/<?= $childType ?>/<?= $child['id'] ?>/"
                                       style="display: inline;"
                                       onsubmit="return confirm('Are you sure you want to delete this item?');">
                                     <?= \Helpers\CSRF::field() ?>
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="btn btn-outline-danger"
                                             title="Delete">
                                         <i class="bi bi-trash"></i>
@@ -260,12 +260,12 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="id" id="edit_child_id">
-                    
+
                     <div class="mb-3">
                         <label for="edit_name" class="form-label">Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_name" name="name" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="edit_description" class="form-label">Description</label>
                         <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
@@ -289,8 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const childId = this.dataset.id;
             const isActive = this.dataset.active === '1';
-            
-            fetch('<?= BASE_URL ?>/masterdata/toggleChildActive/<?= $childType ?>/' + childId, {
+
+            fetch('<?= BASE_URL ?>/masterdata/toggleChildActive/<?= $childType ?>/' + childId + '/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -312,65 +312,65 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    
+
     // Edit child modal
     const editModal = new bootstrap.Modal(document.getElementById('editChildModal'));
     const editForm = document.getElementById('editChildForm');
-    
+
     document.querySelectorAll('.edit-child-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const childId = this.dataset.id;
             const name = this.dataset.name;
             const description = this.dataset.description;
-            
+
             document.getElementById('edit_child_id').value = childId;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_description').value = description;
-            
-            editForm.action = '<?= BASE_URL ?>/masterdata/updateChild/<?= $childType ?>/' + childId;
+
+            editForm.action = '<?= BASE_URL ?>/masterdata/updateChild/<?= $childType ?>/' + childId + '/';
             editModal.show();
         });
     });
-    
+
     // Sortable functionality (if enabled)
     <?php if ($childConfig['sortable']): ?>
     const sortableList = document.getElementById('sortable-children');
     if (sortableList) {
         let draggedElement = null;
         let draggedRow = null;
-        
+
         sortableList.querySelectorAll('tr').forEach(row => {
             const handle = row.querySelector('.sortable-handle');
             if (handle) {
                 handle.addEventListener('mousedown', function() {
                     row.draggable = true;
                 });
-                
+
                 handle.addEventListener('mouseup', function() {
                     row.draggable = false;
                 });
             }
-            
+
             row.addEventListener('dragstart', function(e) {
                 draggedElement = this;
                 draggedRow = this;
                 this.style.opacity = '0.5';
                 e.dataTransfer.effectAllowed = 'move';
             });
-            
+
             row.addEventListener('dragend', function() {
                 this.style.opacity = '';
                 row.draggable = false;
             });
-            
+
             row.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
-                
+
                 if (draggedElement !== this) {
                     const rect = this.getBoundingClientRect();
                     const midpoint = rect.top + rect.height / 2;
-                    
+
                     if (e.clientY < midpoint) {
                         this.parentNode.insertBefore(draggedElement, this);
                     } else {
@@ -378,27 +378,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            
+
             row.addEventListener('drop', function(e) {
                 e.preventDefault();
                 saveOrder();
             });
         });
-        
+
         function saveOrder() {
             const rows = sortableList.querySelectorAll('tr');
             const order = {};
-            
+
             rows.forEach((row, index) => {
                 const id = row.dataset.id;
                 if (id) {
                     order[id] = index;
                 }
             });
-            
+
             console.log('Sending order:', order);
-            
-            fetch('<?= BASE_URL ?>/masterdata/reorderChildren/<?= $childType ?>', {
+
+            fetch('<?= BASE_URL ?>/masterdata/reorderChildren/<?= $childType ?>/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -52,7 +52,7 @@ function loadEnv($path = null) {
             $value = trim($value, '"\'');
             
             // Set in environment
-            if (!getenv($key)) {
+            if (getenv($key) === false) {
                 putenv("$key=$value");
                 $_ENV[$key] = $value;
                 $_SERVER[$key] = $value;
@@ -73,9 +73,11 @@ function env($key, $default = null) {
         return $default;
     }
     
-    // Handle boolean values
-    if (in_array(strtolower($value = strtolower($value)), ['true', 'false', '(true)', '(false)'])) {
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    $normalized = strtolower($value);
+
+    // Handle boolean values without mutating the original string.
+    if (in_array($normalized, ['true', 'false', '(true)', '(false)'], true)) {
+        return filter_var($normalized, FILTER_VALIDATE_BOOLEAN);
     }
     
     return $value;

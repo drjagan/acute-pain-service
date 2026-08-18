@@ -2,7 +2,7 @@
 /**
  * Master Data Management Dashboard
  * Shows all available master data types
- * 
+ *
  * @version 1.2.0
  */
 ?>
@@ -21,7 +21,7 @@
 
 <div class="alert alert-info">
     <i class="bi bi-info-circle"></i>
-    <strong>Master Data:</strong> These are system-wide lookup tables used throughout the application. 
+    <strong>Master Data:</strong> These are system-wide lookup tables used throughout the application.
     Changes here will affect all forms and reports.
 </div>
 
@@ -39,7 +39,7 @@
                 <p class="card-text text-muted">
                     <?= e($config['description']) ?>
                 </p>
-                
+
                 <?php if (isset($config['parent'])): ?>
                 <div class="alert alert-info py-2 mb-3">
                     <small>
@@ -48,7 +48,7 @@
                     </small>
                 </div>
                 <?php endif; ?>
-                
+
                 <?php if (isset($config['has_children'])): ?>
                 <div class="alert alert-warning py-2 mb-3">
                     <small>
@@ -57,13 +57,13 @@
                     </small>
                 </div>
                 <?php endif; ?>
-                
+
                 <div class="d-grid gap-2">
-                    <a href="<?= BASE_URL ?>/masterdata/list/<?= $key ?>" 
+                    <a href="<?= BASE_URL ?>/masterdata/list/<?= $key ?>/"
                        class="btn btn-<?= $config['color'] ?>">
                         <i class="bi bi-list-ul"></i> Manage Items
                     </a>
-                    <a href="<?= BASE_URL ?>/masterdata/create/<?= $key ?>" 
+                    <a href="<?= BASE_URL ?>/masterdata/create/<?= $key ?>/"
                        class="btn btn-outline-<?= $config['color'] ?> btn-sm">
                         <i class="bi bi-plus-circle"></i> Add New
                     </a>
@@ -90,29 +90,29 @@
                     <div class="col-md-6">
                         <h6 class="text-primary"><i class="bi bi-clipboard-pulse"></i> Catheter Insertion Indications</h6>
                         <p class="small">Reasons for catheter placement. Used in catheter insertion forms to standardize indication selection.</p>
-                        
+
                         <h6 class="text-warning"><i class="bi bi-x-circle"></i> Catheter Removal Indications</h6>
                         <p class="small">Reasons for catheter removal. Replaces hardcoded values with manageable database entries.</p>
-                        
+
                         <h6 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Sentinel Events</h6>
                         <p class="small">Adverse events and complications. Used in functional outcomes to track patient complications.</p>
-                        
+
                         <h6 class="text-info"><i class="bi bi-hospital"></i> Medical Specialties</h6>
                         <p class="small">Surgical and medical specialties. Organizes surgical procedures into specialty groups.</p>
                     </div>
                     <div class="col-md-6">
                         <h6 class="text-success"><i class="bi bi-bandaid"></i> Surgical Procedures</h6>
                         <p class="small">Types of surgeries. Linked to specialties for organized selection in patient registration.</p>
-                        
+
                         <h6 class="text-secondary"><i class="bi bi-heart-pulse"></i> Comorbidities</h6>
                         <p class="small">Patient medical conditions. Used in patient registration to track pre-existing conditions.</p>
-                        
+
                         <h6 class="text-primary"><i class="bi bi-capsule"></i> Drugs</h6>
                         <p class="small">Medications used in drug regimes. Includes concentration and dosage information.</p>
-                        
+
                         <h6 class="text-info"><i class="bi bi-plus-circle"></i> Adjuvants</h6>
                         <p class="small">Drug additives and adjuvants. Used alongside primary drugs in regime management.</p>
-                        
+
                         <h6 class="text-danger"><i class="bi bi-flag"></i> Red Flags</h6>
                         <p class="small">Insertion complications. Used to track adverse events during catheter placement.</p>
                     </div>

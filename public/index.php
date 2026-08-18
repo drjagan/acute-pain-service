@@ -20,11 +20,6 @@ $uri = strtok($uri, '?');
 // Remove trailing slash
 $uri = rtrim($uri, '/');
 
-// Debug logging for master data requests
-if (strpos($uri, '/masterdata/') === 0) {
-    error_log("Master Data Request: $method $uri");
-}
-
 // Default route
 if (empty($uri) || $uri === '/') {
     if (isAuthenticated()) {

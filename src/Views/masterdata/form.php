@@ -8,20 +8,20 @@
 
 $isEdit = ($action === 'edit' && !empty($item));
 $formAction = $isEdit 
-    ? BASE_URL . '/masterdata/update/' . $type . '/' . $item['id']
-    : BASE_URL . '/masterdata/store/' . $type;
+    ? BASE_URL . '/masterdata/update/' . $type . '/' . $item['id'] . '/'
+    : BASE_URL . '/masterdata/store/' . $type . '/';
 ?>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <div>
         <h1 class="h2">
             <i class="<?= $config['icon'] ?>"></i> 
-            <?= $isEdit ? 'Edit' : 'Add New' ?> <?= e($config['singular'] ?? rtrim($config['label'], 'ies') . 'y') ?>
+            <?= $isEdit ? 'Edit' : 'Add New' ?> <?= e($config['singular'] ?? rtrim($config['label'], 's')) ?>
         </h1>
         <p class="text-muted mb-0"><?= e($config['description']) ?></p>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="<?= BASE_URL ?>/masterdata/list/<?= $type ?>" class="btn btn-sm btn-outline-secondary">
+        <a href="<?= BASE_URL ?>/masterdata/list/<?= $type ?>/" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Back to List
         </a>
     </div>
@@ -141,7 +141,7 @@ $formAction = $isEdit
                     <hr class="my-4">
                     
                     <div class="d-flex justify-content-between">
-                        <a href="<?= BASE_URL ?>/masterdata/list/<?= $type ?>" class="btn btn-secondary">
+                        <a href="<?= BASE_URL ?>/masterdata/list/<?= $type ?>/" class="btn btn-secondary">
                             <i class="bi bi-x-circle"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-<?= $config['color'] ?>">
@@ -166,7 +166,7 @@ $formAction = $isEdit
                     <?php endif; ?>
                 </p>
                 <form method="POST" 
-                      action="<?= BASE_URL ?>/masterdata/delete/<?= $type ?>/<?= $item['id'] ?>"
+                      action="<?= BASE_URL ?>/masterdata/delete/<?= $type ?>/<?= $item['id'] ?>/"
                       onsubmit="return confirm('Are you absolutely sure you want to delete this item? This action cannot be undone.');">
                     <input type="hidden" name="csrf_token" value="<?= \Helpers\CSRF::token() ?>">
                     <button type="submit" class="btn btn-danger btn-sm">

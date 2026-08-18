@@ -12,7 +12,7 @@ loadEnv(dirname(__DIR__));
 
 // Application Settings
 define('APP_NAME', env('APP_NAME', 'Acute Pain Service'));
-define('APP_VERSION', env('APP_VERSION', '1.1.3'));
+define('APP_VERSION', env('APP_VERSION', '1.2.1-cloudron'));
 define('APP_ENV', env('APP_ENV', 'production'));
 
 // Paths - Cloudron specific

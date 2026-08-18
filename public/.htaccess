@@ -9,18 +9,6 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Remove trailing slash from non-directories (but not masterdata routes)
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteCond %{REQUEST_URI} !^/masterdata/
-    RewriteRule ^ %1 [L,R=301]
-
-    # Add trailing slash to directories (but not masterdata routes)
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteCond %{REQUEST_URI} !(.+)/$
-    RewriteCond %{REQUEST_URI} !^/masterdata/
-    RewriteRule ^(.*)$ $1/ [L,R=301]
-
     # Masterdata routes - route to appropriate wrapper index.php
     # Pattern: /masterdata/{action}/{type}/{id}/ -> /masterdata/{action}/{type}/index.php
     RewriteCond %{REQUEST_URI} ^/masterdata/(edit|update|delete|toggleActive)/([^/]+)/(\d+)/?$
@@ -30,9 +18,8 @@
     RewriteCond %{REQUEST_URI} ^/masterdata/(list|create|store)/([^/]+)/?$
     RewriteRule ^masterdata/(list|create|store)/([^/]+)/?$ masterdata/$1/$2/index.php [L]
     
-    # Handle Front Controller - Preserve REQUEST_URI (exclude masterdata)
+    # Handle Front Controller - Cloudron preserves REQUEST_URI; do not append PATH_INFO
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_URI} !^/masterdata/
-    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+    RewriteRule ^.*$ index.php [L,QSA]
 </IfModule>

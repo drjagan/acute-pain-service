@@ -118,43 +118,43 @@
                 <div class="list-group list-group-flush mb-3">
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-database-gear"></i> All Master Data</span>
-                        <a href="<?= BASE_URL ?>/masterdata/index" class="btn btn-sm btn-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/" class="btn btn-sm btn-warning">
                             <i class="bi bi-grid"></i> Manage All
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-clipboard-pulse"></i> Catheter Indications</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/catheter_indications" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/catheter_indications/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-x-circle"></i> Removal Indications</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/removal_indications" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/removal_indications/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-hospital"></i> Specialties & Surgeries</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/specialties" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/specialties/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-heart-pulse"></i> Comorbidities</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/comorbidities" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/comorbidities/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-capsule"></i> Drugs & Adjuvants</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/drugs" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/drugs/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <span><i class="bi bi-exclamation-triangle"></i> Sentinel Events & Red Flags</span>
-                        <a href="<?= BASE_URL ?>/masterdata/list/sentinel_events" class="btn btn-sm btn-outline-warning">
+                        <a href="<?= BASE_URL ?>/masterdata/list/sentinel_events/" class="btn btn-sm btn-outline-warning">
                             <i class="bi bi-gear"></i> Configure
                         </a>
                     </div>
