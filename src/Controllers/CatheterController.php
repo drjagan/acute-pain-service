@@ -190,6 +190,7 @@ class CatheterController extends BaseController {
         $patients = $this->patientModel->all();
         $redFlags = $this->getLookupData('lookup_red_flags');
         $catheterIndications = $this->getLookupData('lookup_catheter_indications');
+        $catheter['indication_id'] = $this->getCatheterIndicationIdByName($catheter['indication'] ?? '');
         
         $this->view('catheters.edit', [
             'catheter' => $catheter,
@@ -448,13 +449,19 @@ class CatheterController extends BaseController {
         // Required fields
         $required = [
             'patient_id', 'date_of_insertion', 'settings', 'performer',
-            'catheter_category', 'catheter_type', 'indication'
+            'catheter_category', 'catheter_type'
         ];
         
         foreach ($required as $field) {
             if (empty($data[$field])) {
                 $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required';
             }
+        }
+
+        if (!$this->hasCatheterIndicationSelection($data)) {
+            $errors[] = 'Indication is required';
+        } elseif (!$this->findSelectedCatheterIndication($data)) {
+            $errors[] = 'Invalid indication selected';
         }
         
         // Validate patient exists
@@ -492,6 +499,8 @@ class CatheterController extends BaseController {
      * Prepare catheter data for storage
      */
     private function prepareCatheterData($data) {
+        $indication = $this->findSelectedCatheterIndication($data);
+
         return [
             'patient_id' => (int)$data['patient_id'],
             'date_of_insertion' => $data['date_of_insertion'],
@@ -499,11 +508,81 @@ class CatheterController extends BaseController {
             'performer' => $data['performer'],
             'catheter_category' => $data['catheter_category'],
             'catheter_type' => $data['catheter_type'],
-            'indication' => Sanitizer::string($data['indication']),
+            'indication' => Sanitizer::string($indication['name'] ?? ''),
             'functional_confirmation' => isset($data['functional_confirmation']) ? 1 : 0,
             'anatomical_confirmation' => isset($data['anatomical_confirmation']) ? 1 : 0,
             'red_flags' => json_encode($data['red_flags'] ?? [])
         ];
+    }
+
+    /**
+     * Check whether a catheter indication was selected by either current or legacy field name.
+     */
+    private function hasCatheterIndicationSelection(array $data): bool {
+        return !empty($data['indication_id']) || !empty(trim((string)($data['indication'] ?? '')));
+    }
+
+    /**
+     * Resolve a submitted catheter indication to the active master record.
+     */
+    private function findSelectedCatheterIndication(array $data) {
+        if (!empty($data['indication_id'])) {
+            return $this->findActiveCatheterIndicationById((int)$data['indication_id']);
+        }
+
+        if (!empty($data['indication'])) {
+            return $this->findActiveCatheterIndicationByName((string)$data['indication']);
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve an active catheter indication master by ID.
+     */
+    private function findActiveCatheterIndicationById(int $id) {
+        if ($id <= 0) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT id, name
+            FROM lookup_catheter_indications
+            WHERE id = ? AND active = 1 AND deleted_at IS NULL
+            LIMIT 1
+        ");
+        $stmt->execute([$id]);
+
+        return $stmt->fetch();
+    }
+
+    /**
+     * Resolve an active catheter indication master by exact name.
+     */
+    private function findActiveCatheterIndicationByName(string $name) {
+        $name = trim($name);
+        if ($name === '') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT id, name
+            FROM lookup_catheter_indications
+            WHERE name = ? AND active = 1 AND deleted_at IS NULL
+            LIMIT 1
+        ");
+        $stmt->execute([$name]);
+
+        return $stmt->fetch();
+    }
+
+    /**
+     * Map saved catheter indication text back to the active master ID for edit forms.
+     */
+    private function getCatheterIndicationIdByName(string $name): ?int {
+        $indication = $this->findActiveCatheterIndicationByName($name);
+
+        return $indication ? (int)$indication['id'] : null;
     }
     
     /**
