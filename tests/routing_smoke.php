@@ -58,9 +58,15 @@ $expectStatus = static function (
 };
 
 $expectRoute('GET', '/dashboard', 'DashboardController', 'index');
+$expectRoute('GET', '/masterdata/', 'MasterDataController', 'index');
 $expectRoute('GET', '/patients/viewPatient/42', 'PatientController', 'viewPatient', ['42']);
 $expectRoute('POST', '/patients/update/42', 'PatientController', 'update', ['42'], true);
 $expectRoute('GET', '/masterdata/list/drugs/', 'MasterDataController', 'list', ['drugs']);
+$expectRoute('GET', '/masterdata/create/drugs/', 'MasterDataController', 'create', ['drugs']);
+$expectRoute('POST', '/masterdata/store/drugs/', 'MasterDataController', 'store', ['drugs'], true);
+$expectRoute('GET', '/masterdata/edit/drugs/7/', 'MasterDataController', 'edit', ['drugs', '7']);
+$expectRoute('POST', '/masterdata/update/drugs/7/', 'MasterDataController', 'update', ['drugs', '7'], true);
+$expectRoute('POST', '/masterdata/delete/drugs/7/', 'MasterDataController', 'delete', ['drugs', '7'], true);
 $expectRoute(
     'POST',
     '/masterdata/toggleActive/drugs/7/',
@@ -80,6 +86,7 @@ $expectRoute(
 $expectRoute('POST', '/notifications/markAllAsRead', 'NotificationController', 'markAllAsRead', [], true);
 $expectRoute('POST', '/settings/testSMTP', 'SettingsController', 'testSMTP', [], true);
 $expectStatus('GET', '/patients/store', 'method_not_allowed');
+$expectStatus('GET', '/masterdata/store/drugs/', 'method_not_allowed');
 $expectStatus('GET', '/unknown/path', 'not_found');
 
 if (!empty($failures)) {

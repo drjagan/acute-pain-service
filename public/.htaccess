@@ -9,14 +9,10 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Masterdata routes - route to appropriate wrapper index.php
-    # Pattern: /masterdata/{action}/{type}/{id}/ -> /masterdata/{action}/{type}/index.php
-    RewriteCond %{REQUEST_URI} ^/masterdata/(edit|update|delete|toggleActive)/([^/]+)/(\d+)/?$
-    RewriteRule ^masterdata/(edit|update|delete|toggleActive)/([^/]+)/\d+/?$ masterdata/$1/$2/index.php [L]
-    
-    # Pattern: /masterdata/{action}/{type}/ -> /masterdata/{action}/{type}/index.php
-    RewriteCond %{REQUEST_URI} ^/masterdata/(list|create|store)/([^/]+)/?$
-    RewriteRule ^masterdata/(list|create|store)/([^/]+)/?$ masterdata/$1/$2/index.php [L]
+    # Cloudron/LAMP: legacy masterdata wrapper directories physically exist.
+    # Route canonical masterdata URLs through the front controller first.
+    RewriteCond %{REQUEST_URI} !/index\.php($|\?)
+    RewriteRule ^masterdata(/.*)?$ index.php [L,QSA]
     
     # Handle Front Controller - Cloudron preserves REQUEST_URI; do not append PATH_INFO
     RewriteCond %{REQUEST_FILENAME} !-d
