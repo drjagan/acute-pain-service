@@ -77,7 +77,7 @@ class PatientController extends BaseController {
                 WHERE patient_id = ? 
                 AND status = 'active'
                 AND deleted_at IS NULL
-                ORDER BY created_at DESC
+                ORDER BY created_at DESC, id DESC
                 LIMIT 1
             ");
             $stmt->execute([$patient['patient_id']]);
