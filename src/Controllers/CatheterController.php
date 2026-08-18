@@ -13,6 +13,8 @@ use Helpers\Sanitizer;
  */
 class CatheterController extends BaseController {
     
+    private const MIN_CATHETER_DAYS = 1;
+
     private $catheterModel;
     private $patientModel;
     
@@ -285,10 +287,9 @@ class CatheterController extends BaseController {
             return $this->redirect('/catheters/viewCatheter/' . $id);
         }
         
-        // Calculate catheter days
-        $insertionDate = new \DateTime($catheter['date_of_insertion']);
-        $today = new \DateTime();
-        $catheterDays = $today->diff($insertionDate)->days;
+        // Calculate catheter days; same-day removal counts as one catheter day.
+        $catheterDays = $this->calculateCatheterDays($catheter['date_of_insertion'], date('Y-m-d'))
+            ?? self::MIN_CATHETER_DAYS;
         
         // Load removal indications from database
         $indicationModel = new \Models\LookupRemovalIndication();
@@ -314,15 +315,25 @@ class CatheterController extends BaseController {
             return $this->redirect('/catheters');
         }
         
+        $input = $_POST;
+        $calculatedDays = $this->calculateCatheterDays(
+            $catheter['date_of_insertion'],
+            $input['date_of_removal'] ?? ''
+        );
+
+        if ($calculatedDays !== null) {
+            $input['number_of_catheter_days'] = $calculatedDays;
+        }
+
         // Validate input
-        $validation = $this->validateRemovalData($_POST);
+        $validation = $this->validateRemovalData($input, $catheter);
         if (!$validation['valid']) {
             Flash::error($validation['message']);
             return $this->redirect('/catheters/remove/' . $id);
         }
         
         // Prepare data
-        $data = $this->prepareRemovalData($_POST);
+        $data = $this->prepareRemovalData($input);
         $data['catheter_id'] = $id;
         $data['patient_id'] = $catheter['patient_id'];
         $data['created_by'] = $this->user()['id'];
@@ -395,15 +406,26 @@ class CatheterController extends BaseController {
     /**
      * Validate removal data
      */
-    private function validateRemovalData($data) {
+    private function validateRemovalData($data, ?array $catheter = null) {
         $errors = [];
         
         // Required fields
         $required = ['indication', 'date_of_removal', 'number_of_catheter_days'];
         
         foreach ($required as $field) {
-            if (empty($data[$field])) {
+            if (!$this->hasSubmittedValue($data, $field)) {
                 $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required';
+            }
+        }
+
+        if ($catheter && $this->hasSubmittedValue($data, 'date_of_removal')) {
+            $catheterDays = $this->calculateCatheterDays(
+                $catheter['date_of_insertion'] ?? '',
+                $data['date_of_removal']
+            );
+
+            if ($catheterDays === null) {
+                $errors[] = 'Removal date must be on or after insertion date';
             }
         }
         
@@ -413,8 +435,12 @@ class CatheterController extends BaseController {
         }
         
         // Validate catheter days
-        if (isset($data['number_of_catheter_days']) && ($data['number_of_catheter_days'] < 0 || $data['number_of_catheter_days'] > 30)) {
-            $errors[] = 'Number of catheter days must be between 0 and 30';
+        if ($this->hasSubmittedValue($data, 'number_of_catheter_days')) {
+            if (!is_numeric($data['number_of_catheter_days'])) {
+                $errors[] = 'Number of catheter days must be numeric';
+            } elseif ((int)$data['number_of_catheter_days'] < self::MIN_CATHETER_DAYS || (int)$data['number_of_catheter_days'] > 30) {
+                $errors[] = 'Number of catheter days must be between 1 and 30';
+            }
         }
         
         if (!empty($errors)) {
@@ -432,12 +458,39 @@ class CatheterController extends BaseController {
             'indication' => $data['indication'],
             'indication_notes' => !empty($data['indication_notes']) ? Sanitizer::string($data['indication_notes']) : null,
             'date_of_removal' => $data['date_of_removal'],
-            'number_of_catheter_days' => (int)$data['number_of_catheter_days'],
+            'number_of_catheter_days' => max(self::MIN_CATHETER_DAYS, (int)$data['number_of_catheter_days']),
             'catheter_tip_intact' => isset($data['catheter_tip_intact']) ? 1 : 0,
             'removal_complications' => !empty($data['removal_complications']) ? Sanitizer::string($data['removal_complications']) : null,
             'final_notes' => !empty($data['final_notes']) ? Sanitizer::string($data['final_notes']) : null,
             'patient_satisfaction' => !empty($data['patient_satisfaction']) ? $data['patient_satisfaction'] : null
         ];
+    }
+
+    /**
+     * Calculate catheter days from insertion to removal; same-day removal counts as one.
+     */
+    private function calculateCatheterDays(string $insertionDate, string $removalDate): ?int {
+        $insertion = \DateTimeImmutable::createFromFormat('!Y-m-d', $insertionDate);
+        $removal = \DateTimeImmutable::createFromFormat('!Y-m-d', $removalDate);
+
+        if (
+            !$insertion ||
+            !$removal ||
+            $insertion->format('Y-m-d') !== $insertionDate ||
+            $removal->format('Y-m-d') !== $removalDate ||
+            $removal < $insertion
+        ) {
+            return null;
+        }
+
+        return max(self::MIN_CATHETER_DAYS, $insertion->diff($removal)->days);
+    }
+
+    /**
+     * Required field check that treats "0" as submitted.
+     */
+    private function hasSubmittedValue(array $data, string $field): bool {
+        return array_key_exists($field, $data) && trim((string)$data[$field]) !== '';
     }
     
     /**

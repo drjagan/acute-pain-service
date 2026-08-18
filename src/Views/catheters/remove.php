@@ -65,13 +65,13 @@
                            class="form-control" 
                            id="number_of_catheter_days" 
                            name="number_of_catheter_days" 
-                           value="<?= $catheterDays ?>"
-                           min="0" 
+                           value="<?= max(1, (int)$catheterDays) ?>"
+                           min="1"
                            max="30" 
                            required
                            readonly>
                     <div class="form-text">Auto-calculated from insertion date</div>
-                    <div class="invalid-feedback">Catheter days must be between 0 and 30</div>
+                    <div class="invalid-feedback">Catheter days must be between 1 and 30</div>
                 </div>
                 
                 <div class="col-md-4 mb-3">
@@ -217,16 +217,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-calculate catheter days when removal date changes
     const removalDateInput = document.getElementById('date_of_removal');
     const catheterDaysInput = document.getElementById('number_of_catheter_days');
-    const insertionDate = new Date('<?= $catheter['date_of_insertion'] ?>');
+    const insertionDate = parseLocalDate('<?= $catheter['date_of_insertion'] ?>');
     
-    removalDateInput.addEventListener('change', function() {
-        const removalDate = new Date(this.value);
+    function parseLocalDate(value) {
+        const parts = value.split('-').map(Number);
+        if (parts.length !== 3 || parts.some(Number.isNaN)) {
+            return null;
+        }
+
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function updateCatheterDays() {
+        const removalDate = parseLocalDate(removalDateInput.value);
         if (removalDate >= insertionDate) {
             const diffTime = Math.abs(removalDate - insertionDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
             catheterDaysInput.value = diffDays;
+            catheterDaysInput.setCustomValidity('');
+        } else {
+            catheterDaysInput.value = '';
+            catheterDaysInput.setCustomValidity('Removal date must be on or after insertion date');
         }
-    });
+    }
+
+    removalDateInput.addEventListener('change', updateCatheterDays);
+    updateCatheterDays();
     
     // Show/hide indication notes based on selection
     const indicationSelect = document.getElementById('indication');
